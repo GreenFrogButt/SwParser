@@ -531,7 +531,7 @@ private fun helpMe() {
         How I run it:
         Before running for the first time delete your database ("Database.txt")
         Then, for every turn:
-            ./SwParser -t "turn name"
+            SwParser.jar -t "turn name"
    """)
 }
 
@@ -546,14 +546,13 @@ private fun getCommandLineArguments(args: Array<String>,
     }
 
     var flag: Char
-    val g = GetOpt(args, "hvt:d:o:")
+    val g = GetOpt(args, "ht:d:o:")
     g.optErr = true
     while ((g.getopt().also { flag = it.toChar() }) != -1) {
         when (flag) {
             't' -> options["turnName"]    = g.optArgGet()
             'd' -> options["database"]    = g.optArgGet()
             'o' -> options["output"]      = g.optArgGet()
-            'v' -> options["showVerson"]  = "true"
             'h' -> {
                 helpMe()
                 exitProcess(0)
@@ -582,7 +581,6 @@ private fun getCommandLineArguments(args: Array<String>,
 }
 
 fun main(args: Array<String>) {
-    //println("Directory: " + System.getProperty("user.dir"))
     var prefix: String
     var databaseIn: String
     var turnIn: String
@@ -595,10 +593,11 @@ fun main(args: Array<String>) {
     //      resultsFile = "results.txt"
     //      diff -b results.txt testData/expectedResults.txt
     //
-    //      turnIn = "_turnin.txt"
-    //      databaseIn = "_dbin.txt"
+    //      This one isn't included for release because it's my current game.
+    //      turnIn = "testData/_turnin.txt"
+    //      databaseIn = "testData/_dbin.txt"
     //      resultsFile = "results.txt"
-    //      diff -b results.txt _results.txt
+    //      diff -b results.txt testData/_results.txt
 
     val options = mutableMapOf(
         "turnName"    to "",
@@ -608,7 +607,6 @@ fun main(args: Array<String>) {
 
     getCommandLineArguments(args, options)
 
-    //testFile    = "nuTestData/SW-BM_336 T5.txt"
     prefix      = getPrefix(options.getValue("turnName"))
     turnIn      = "$prefix/" + options.getValue("turnName")
     databaseIn  = "$prefix/" + options.getValue("database")
