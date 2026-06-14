@@ -1,0 +1,1472 @@
+// Starweb parser for world info.
+//
+//  Jim's 3rd Java program, first one over 100 lines.  Be gentle.  I have an
+//  urge to re-write this in kotlin with real OO stuff but, well, it's working
+//  so why?
+//
+//  Make a jar file via 'jar cf Starweb.jar *.class'
+//
+// Reads saved data from a file, then parses the new turn.  Run via 
+// 'java -jar Starweb.jar turn'.  Uses Database.txt to track seen worlds.
+//
+//  Starweb rules are at http://www.flyingbuffalo.com/swrules.htm
+//
+// See helpMe() or use -h for arguments.
+//
+// Why -x?  I often want to find worlds with lots of Ind/Pop/Met but don't want
+// to mess with saving/restoring Database.txt.
+//
+// Bugs, TODOs and issues.  I shouild look for a bug tracker again.....
+//  x Throws exception when I forget to give it an input file.
+//
+//  x Be nice to know how much available metal I have in the early game
+//
+//  21/5/17 - SW 309 t20, W7 showed up but not on my changelist.
+//
+//  x If a world has converts, then gets robotized, it still shows convert owner
+//
+//  x When worlds change hands print old owner as well as the new one.
+//
+//  x Add -h option
+//
+//  x World connections aren't sorted when I infer connections.
+//      sigh.  They're sometimes sorted, sometimes not so still a bug.
+//      Wish I'd kept track of which game/turn I saw the bug in so I could be
+//      sure my fix actually fixes it.
+//
+//  Add flag to find worlds with lots of home ships
+//
+//  x Make -x the default for i, p, m, h options
+//
+//  x Got a world that wraps twice (CG-Unload did it), need to fix my wrap.
+//       Not gonna fix, turns from FBI sometimes wrap
+//
+//  x SW AM330 T10: W155 (132,132) [null] (First=0,Last=0), commections should
+//          be (2, 132).  fixed 24/9/14
+//
+//  20/11/13 -  Interesting programming challenge.  I often want to know how
+//              much metal is within a 3 move radius from a HW.  That would
+//              require me firing up the thinky bits and going back to graph
+//              theory.  Wonder if I still have that textbook?
+//
+//  Confusion on the -v option and the DEBUG variable, need to think on it.
+//      Looking at it I should always use verbose instead of DEBUG.
+//
+//  Keep track of other player's keys and ship counts.  In 309 Saturn has a
+//  lot of really big fleets flying around, be nice if I could easily add up
+//  his ships I can see from turn to turn.
+//      Not gonna fix, using grep and awk for those rare cases I care about works.
+//  
+//  I'd like to use println or %n to print but those use CRLF, when I want
+//  LF.  Tried various permutations of
+//  
+//      Properties p = System.getProperties();
+//      p.put("line.separator", "\n");
+//      System.setProperties(p);
+//   
+//  with no joy.
+//
+//  Could keep track of BUSTED but I don't see it as being terribly useful.
+//  Same with DEATHS=x and PBB.
+//
+//  Implement JavaDoc.
+//
+//  With the -l and -M options I now want to know which worlds are mine,
+// add to code that parses the header.
+
+import java.util.*;
+import java.io.*;
+import java.nio.charset.*;
+import java.nio.file.*;
+import java.util.regex.*;
+import java.util.stream.*;
+
+/**
+ *  Parse a Starweb turn and extract it's world info.
+ */
+
+public class Starweb {
+    /** used for debugging, higher numbers == more verbosity */
+    // Errr, how does this relate to command-line verbose?
+    static final int DEBUG = 0;
+
+    /** Default save file name.  Gets twiddled under IntelliJ */
+    String saveFile = "Database.txt";
+
+    /** Worlds range from 1 to 255, world[0] will never be used.  */
+    static final int MAX_WORLDS = 256;
+
+    // Save the game ID and current turn in the save file.
+    private String gameID   = "Unknown";
+    private int    gameTurn = 0;
+
+    // Keep track of worlds that change hands
+    // This ChangeOwner stuff got added some 7 years after I first wrote this
+    // program.  I'm getting the hang of it :)
+    private static class ChangeOwner {
+        int    id;
+        String oldOwner;
+        String newOwner;
+    }
+    ArrayList<ChangeOwner> newOwners = new ArrayList<>();
+
+    // Stash my names.
+    Set<String> myNames = new HashSet<>();
+
+    // Keep track of players each player has met
+    // Not as useful as I thought and is annoying.
+    PlayersMet playersMet = new PlayersMet();
+    
+    // For multi-games I like to sum up my total number of things.
+    int totalWorlds, totalIndustry, totalShips, totalKeys, totalMines;
+
+    // Keep track of how much metal I have sitting around.  This is only useful
+    // in the early game as no attempt is made to ensure I own the metal.....
+    int availableMetal;
+
+    // Minimum values to print worlds that have a base level of resource.
+    // Starweb was written in the 70's, everything maxes out at 255
+  
+    final static int DEFAULT_MINS   = Integer.MAX_VALUE; // Nice and big
+    int minInd                      = DEFAULT_MINS;      // Industry
+    int minPop                      = DEFAULT_MINS;      // Population
+    int minMetal                    = DEFAULT_MINS;      // Metal
+    int verbose  = 0;
+    boolean dontSave      = false;
+    boolean quietMode     = true;
+    boolean showLimits    = false;
+    boolean justMetal     = false;
+    boolean printPlayers  = false;
+    boolean runningFromIntelliJ = false;
+
+    /**
+     *  This would be a struct if Java had structs.  Contains all the info
+     *  for a world.  
+     *
+     *  Now that I've got Java experience, if I had to do it again World would
+     *  be a real class, not a faux struct.
+     *
+     *  And it would make a perfect kotlin data class.
+     *
+     *  I should add a toString() to this now that I'm familiar with OO.
+     */
+
+    static class World {
+        int number;         // same as the array index, just don't want to pass
+                            // the array index around
+        int first;          // turn world first seen
+        int last;           // last turn world was seen
+        ArrayList<Integer> connections = new ArrayList<>();
+        String owner;
+        String convertOwner;
+        int converts;
+        int robots;
+        int industry;
+        int usable;
+        int metal;
+        int mines;
+        int pop;
+        int turns;
+        int limit;
+        int iships;
+        int pships;
+        String plunder;
+        int cg;
+    }
+
+    /** Our main data repository, World[0] is never used. */
+    World[] worlds;
+
+    /**
+     *  Given a String, return a String where the longest line is MAX_LEN chars.
+     *  I should document this better....
+     */
+
+    static final int MAX_LINE_LENGTH = 79;
+
+    String saneLineBreaks(List<String> input, int addTabs)
+    {
+        return saneLineBreaks(null, input, addTabs, MAX_LINE_LENGTH);
+    }
+
+    String saneLineBreaks(String intro, List<String> input, int addTabs)
+    {
+        return saneLineBreaks(intro, input, addTabs, MAX_LINE_LENGTH);
+    }
+
+    /**
+     * I really wish I'd javadoc'd this 10 years ago...
+     *
+     * @param intro
+     * @param input
+     * @param addTabs
+     * @param maxLength
+     * @return
+     */
+    String saneLineBreaks(String intro, List<String> input, int addTabs,
+                          int maxLength) {
+        StringBuilder result =
+                new StringBuilder( (int) (input.toString().length() * 1.5));
+
+        int lineLength = 0;
+        if(intro != null) {
+            result.append(intro);
+            lineLength = result.length();
+        }
+        for(String word : input) {
+            word = word.concat(", ");
+            if((lineLength + word.length()) >= maxLength) {
+                result.append("\n");
+                result.append("----".repeat(addTabs));
+                lineLength = 0;
+            }
+            result.append(word);
+            lineLength += word.length();
+        }
+        // delete trailing comma space
+        result.replace(result.lastIndexOf(", "), result.length(), "");
+        return(result.toString());
+    }
+
+    /**
+     *  Given a filename, reads a file of multi-line records and stores them
+     *  into a List, which is returned.  Not used.  Figured out how to do it
+     *  doing something else, don't want to change this program yet.
+     *
+     *  This would replace the existing getRecord() method.  Big change is
+     *  getRecord() reads the file a record at a time, this slurps up the
+     *  entire file.
+     *
+     *  @param fileName Name of the file of multiline records
+     *  @return List of records, 1 per entry.
+     */
+    private List<String> getRecords(String fileName) {
+        //String input = fileName;
+        List<String> result = null;
+ 
+        try {
+            //Path path = Paths.get(fileName);
+            FileReader reader = new FileReader(fileName);
+            Scanner scanner = new Scanner(reader).useDelimiter("(?m)^\\s*$"); 
+             
+            Stream<String> streamOfRecords = StreamSupport.stream(
+                    Spliterators.spliteratorUnknownSize(scanner,
+                            Spliterator.ORDERED), false);
+
+            result = streamOfRecords
+                    .map(l -> l.replaceAll("\n", " "))
+                    .map(l -> l.replaceAll("\r", ""))
+                    .map(String::trim)
+                    .collect(Collectors.toList());
+
+        } catch(Exception e) {
+            System.out.println("getRecords: " + e);
+        }
+        return result;
+    }
+
+    /**
+     *  Takes a world and returns a string ready for printing.   All lines are
+     *  shorter than 77 characters
+     *
+     *  This should be a toString() in class World.  I didn't know about
+     *  toString when I originally wrote this.
+     */
+
+    private String formatWorld(final World world) {
+        /** Lines longer than 80 chars are a pain. */
+        final int MAX_LEN = 77;
+
+        // 24/06/07 - Bugfix - Sort just before printing.
+        Collections.sort(world.connections);
+
+        // Have yet to see a world with more than 2 lines of data, hence the
+        // "MAX_LEN * 3" argument below (using 9 instead of 2 is insurance).
+        StringBuilder line = new StringBuilder(MAX_LEN * 9);
+
+        line.append(String.format("W%d (%d",
+                        //world.number, world.connections.get(0)));
+                        world.number, world.connections.getFirst())); // TODO this doesn't compile?
+
+        for(int i = 1; i < world.connections.size(); i++)
+            line.append(String.format(",%d", world.connections.get(i)));
+
+        line.append(String.format(") [%s] ", world.owner));
+
+        if(world.convertOwner != null)
+            line.append(String.format(" C[%s] ", world.convertOwner));
+
+        line.append(String.format("(First=%d", world.first));
+        line.append(String.format(",Last=%d", world.last));
+
+        if(world.industry > 0) {
+            line.append(String.format(",Industry=%d", world.industry));
+            // TODO: this is a bug.  If a lot of ships are over an industrialized
+            //      world then usable will be 0.
+            if(world.usable > 0)
+                line.append(String.format("/%d", world.usable));
+        }
+
+        if(world.metal > 0)
+            line.append(String.format(",Metal=%d", world.metal));
+
+        if(world.mines > 0)
+            line.append(String.format(",Mines=%d", world.mines));
+
+        if(world.pop > 0) {
+            // If a world is 100% converts or robots then pop is 0, so we won't
+            // be here.
+
+            line.append(String.format(",Population=%d", world.pop));
+
+            if(world.converts > 0)
+                line.append(String.format("/%dC", world.converts));
+        }
+        else if(world.converts > 0)
+            line.append(String.format(",Population=%dC", world.converts));
+        else if(world.robots > 0)
+            line.append(String.format(",Population=%dR", world.robots));
+
+        if(world.limit > 0)
+            line.append(String.format(",Limit=%d", world.limit));
+
+        if(world.turns > 0)
+            line.append(String.format(",Turns=%d", world.turns));
+
+        if(world.iships > 0)
+            line.append(String.format(",I-Ships=%d", world.iships));
+
+        if(world.pships > 0)
+            line.append(String.format(",P-Ships=%d", world.pships));
+
+        if(world.plunder != null)
+            line.append(String.format(",Plunder=%s", world.plunder));
+
+        if(world.cg > 0)
+            line.append(String.format(",CG-Unload=%d", world.cg));
+
+        line.append(")\n\n");
+
+        // If the line is too long wrap on a comma boundry.  I don't think
+        // it's possible for a world to be more than 2 lines so only one
+        // wrap is done.  Mostly cuz for testing I'd have to add data to make
+        // it 3 lines, which involves creating invalid data which is more
+        // likely to cause more issues than assuming a 2 line max.
+        //
+        // Well dang, 3 years later got a world with 2 wraps.  Fixing it is
+        // non-trivial and not worth the effort for something that's happened
+        // twice in 7 years.
+        // TODO: handle unlimited wraps.  Looks ez but don't wanna get sidetracked
+
+        String result;
+
+        if(line.length() > MAX_LEN) {
+            int index = line.lastIndexOf(",", MAX_LEN);
+            result =  line.substring(0, index + 1)
+                      + "\n        "
+                      + line.substring(index + 1, line.length());
+        }
+        else
+            result = line.toString();
+
+        return result;
+    }
+
+
+    /**
+     *  Print all the worlds we've seen to stdout.
+     */
+    private void showWorlds(World[] worlds) {
+        // Print who I think I am
+        System.out.println("Player " + myNames);
+
+        // Print totals, useful in multi-games
+        System.out.printf(
+            "Worlds %3d  Keys %3d  Ships %4d  Ind %3d  Mines %3d\n",
+            totalWorlds, totalKeys, totalShips, totalIndustry, totalMines);
+
+        if(verbose > -1)
+            System.out.printf("Available metal: " + availableMetal + "\n\n\n");
+
+        // Print players met
+        if(printPlayers)
+            playersMet.printPlayersMet();
+
+        // Print worlds that changed owner before printing the header so
+        // we don't need to change our parser.
+
+        for(ChangeOwner change : newOwners) {
+            System.out.printf("World %3d was %8s, now %8s\n",
+                change.id, change.oldOwner, change.newOwner);
+        }
+
+        // Print worlds with lots of IND
+        if(minInd != DEFAULT_MINS) {
+            System.out.printf("\nWorlds with at least " + minInd +"  Ind\n");
+            for(int i = 1; i < 256; i++) {
+                if(worlds[i].industry >= minInd)
+                    System.out.printf(i + " (" + worlds[i].owner + "): " +
+                                        worlds[i].industry + "\n");
+            }
+        }
+        // Print worlds with lots of metal
+        if(minMetal != DEFAULT_MINS) {
+            System.out.println("\nWorlds with at least " + minMetal +"  metal");
+            for(int i = 1; i < 256; i++) {
+                if(worlds[i].metal >= minMetal)
+                    System.out.println(i + " (" + worlds[i].owner + "): " +
+                                        worlds[i].metal);
+            }
+        }
+
+        // Break even for PBBs is 96 pop.  More pop, PBBs have the advantage.
+        if(minPop != DEFAULT_MINS) {
+            System.out.println("\nWorlds with at least " + minPop + "  pop");
+            for(int i = 1; i < 256; i++) {
+                if(worlds[i].pop >= minPop) {
+                    System.out.println(i + " (" + worlds[i].owner + "): " +
+                                worlds[i].pop + " (" + worlds[i].limit + ")");
+                }
+                else if(worlds[i].converts >= minPop)
+                    System.out.println(i + " (" + worlds[i].owner + "): " +
+                            worlds[i].converts + " (" + worlds[i].limit + ")");
+            }
+        }
+
+        // Parser ignores everything encountered before this.  A line of
+        // dashes separates the head from the body of the turn.
+        System.out.printf("\nGame %s, Turn %d\n\n  ------------\n\n",
+            gameID, gameTurn);
+
+        if(dontSave)
+            return;
+
+        for(int world = 1; world < MAX_WORLDS; world++) {
+            // Only print worlds we've seen, or that have more than 1 connector
+            // Imagine worlds A and B connect to C, but we can't see C.  We
+            // still want to see C in the printout.
+            //
+            // And yes, I did have a game where some worlds had 1 connector.
+
+            if( (worlds[world].connections.size() > 1) ||
+                (worlds[world].last != 0) ) {
+                System.out.printf(formatWorld(worlds[world]));
+            }
+        }
+    }
+
+    /**
+     * A single world is printed on multiple lines, with a blank line
+     * separating worlds.  This reads and returns a complete world in a
+     * single line.
+     *
+     * In perl I just changed the EOL character, can't find a way to do that
+     * in java :(
+     *
+     * Returns NULL on EOF.
+     */
+
+    private String getRecord(BufferedReader reader) {
+        StringBuilder buf = new StringBuilder();
+        String line = null;
+
+        // Read until we either get something, or hit EOF.
+
+        try {
+            do {
+                line = reader.readLine();
+
+                if(line == null)
+                    break;
+                buf.append(line);
+            } while(!line.isEmpty());
+        }
+        catch (IOException ex) {
+            // Don't change 'out' to 'err', then you can't see the order in
+            // which things happened.
+            System.out.println("foo 2: " + ex);
+            System.out.println("line: " + line);
+            //System.out.println(ex.toString());
+        }
+        String record = buf.toString();
+
+        // If the record is nothing but whitespace read another one.
+        if(record.isEmpty()) {
+            if(line == null)
+                record = null;              // EOF, no data to return
+            else
+                return getRecord(reader);   // blank line, read the next one
+        }
+
+        return record;
+    }
+ 
+    /*
+     *  Industry can be either n, or n/n.  Population can be n, nC, nR, or
+     *  n/nC.  Examples:
+     *
+     *      30      Either 30 pop or industry
+     *      20/12   20 industry, only 12 can build.
+     *      127C    127 converts
+     *      6R      6 Robots
+     *      87/9C   87 pop, 9 of them are converts.
+     *
+     * Parsestuff takes a string in one of the above formats and fills in
+     * a GenericNumber.
+     *
+     * Todo: think of better names for GenericNumber and parseStuff.
+     */
+
+    static class GenericNumber {
+        int number, converts, robots, usable;
+    }
+
+    /**
+     *  Parse a field and stuff the results into a GenericNumber class.
+     *
+     *  24/9/14 IntelliJ gives lots of warnings for the Regexps below.  I really
+     *          don't want to revist those so the warnings stay.
+     */
+
+    private GenericNumber parseStuff(String in)
+    {
+        GenericNumber results = new GenericNumber();
+
+        Pattern tokenPatt = Pattern.compile(
+                      "(\\d+)"          // 1 or more digits
+                    + "(?:([/CR])"      // Optional '/', 'C', or 'R'
+                    + "(?:(\\d+)"       // optional more digits
+                    + "(?:(C)"          // optional trailing C
+                    + ")?)?)?");        // close optional clauses
+
+        Matcher token = tokenPatt.matcher(in);
+
+        // Define where each field lives in token.group()
+        final int FIRST_NUM    = 1;
+        final int DELIMITER    = 2;
+        final int SECOND_NUM   = 3;
+        final int CONVERTS_IND = 4;
+
+        // For all inputs we expect a number in the first group.
+        token.matches();
+        results.number = Integer.parseInt(token.group(FIRST_NUM));
+
+        if(token.group(DELIMITER) != null)
+        {
+            switch(token.group(DELIMITER))
+            {
+                case "C" :
+                    results.converts = results.number;
+                    results.number = 0;
+                    break;
+                case "R" :
+                    results.robots = results.number;
+                    results.number = 0;
+                    break;
+                case "/" :
+                    int nextNumber = Integer.parseInt(token.group(SECOND_NUM));
+
+                    if(token.group(CONVERTS_IND) != null)
+                        results.converts = nextNumber;
+                    else
+                        results.usable = nextNumber;
+
+                    break;
+                default:
+                    System.out.printf("Parse error in <%s>\n", in);
+                    break;
+            }
+
+        }
+        return results;
+    }
+
+    /**
+     * Given a world's data in a single line, parse it.
+     *
+     * From the rulebook, the printout of a world is:
+     *
+     *  1)  World Number
+     *  2)  List of Connections
+     *  3)  Owner of this world, [] if no owner
+     *  4)  (if applicable) Owner of converts: C[NAME]
+     *  5)  The number of industry, metal, mines, population, population limit,
+     *      Iships, and Pships at the world. (If industry is two numbers with
+     *      a "/", then the first number is actual industry, and the second
+     *      number is the amount of industry usable this turn. If population
+     *      is 25/5C for instance, that means that there are 25 population, of
+     *      which 5 are converts. If population is followed by an "R", that
+     *      means they are robots.)
+     *  6)  If a PBB has been dropped at this world during the game so far,
+     *      "BUSTED" will appear. If population (not robots) has died,
+     *      "DEATHS=xx" will appear. If "Deaths" has two numbers, the one
+     *      after the "/" is how many converts died. "Turns=" is the Turns
+     *      number. If the world has been plundered so far this game, the
+     *      word "Plunder=x" will appear with "x" being the number of times
+     *      it has been plundered. If there are two numbers, the one after
+     *      the "/" is how many turns before the world recovers from the
+     *      plunder. "CG-Unloaded=x" tells you how many times Consumer Goods
+     *      have been unloaded on this world. If the world was captured this
+     *      turn, you are told who lost it and who captured it.
+     *
+     *  Turns out save/load is trivial if I print the output of this program
+     *  to look like a normal turn and use parseWorld to read that save
+     *  file.  Which means I have to look for the Last= field, which I
+     *  added and is not in the rulebook.
+     *
+     *  Useful to know the first time a world was seen, so now we have a
+     *  First= field.  This is also not in the rulebook.
+     *
+     *  If readDB is true we're initializing the database.
+     *
+     *  At 200+ lines this is way too long, but breaking it up is not only
+     *  hard to do, it destroys the readability (IMH0).  
+     */
+
+    private void parseWorld(int turn, String record, boolean readDB)
+    {
+        if(DEBUG > 0)
+            System.out.printf("Parseworld, turn = %d\n", turn);
+
+        // We'll be extracting a lot of numbers.
+        Pattern numPatt = Pattern.compile("\\d+");
+
+        // generic matcher, used everywhere.
+        Matcher results;
+
+        // Use a scanner to pull words out of the record.
+        Scanner sc = new Scanner(record);
+
+        // It's handy to see what the scanner gave us.
+        String token;
+
+        // World ID, format Wnn
+        token = sc.next();
+        if(DEBUG > 1)
+            System.out.printf("world token: %s\n", token);
+        results = numPatt.matcher(token);
+        if(!results.find()) {
+            System.out.printf("Parse error on %s (%s)\n", record, token);
+            sc.close();
+            return;
+        }
+
+        int worldID = Integer.parseInt(results.group());
+        worlds[worldID].number = worldID;
+        worlds[worldID].last = turn;
+
+        // If the world gets PBB'd everything goes to 0, but they aren't 
+        // shown on the printout.  Set to 0 now, then if the fields are 
+        // encountered they'll be updated to the correct values.
+        //
+        // This still isn't right.  Turns out PBB'd worlds have BUSTED printed
+        // after them, I need to look for this and act accordingly.
+        //
+        // What happens if I PBB a world, then drop robots on it?  Or migrate
+        // POP to it?  (found out if I migrate pop to it they die, the pop limit
+        // is 0.  If I drop robots on a PBB world I own it, robots ignore the
+        // pop limit)
+        //
+        // Works fine now.
+
+        // I should probably do the below in the constructor.
+        worlds[worldID].converts = 0;
+        worlds[worldID].robots = 0;
+        worlds[worldID].converts = 0;
+        worlds[worldID].industry = 0;
+        worlds[worldID].usable = 0;
+        worlds[worldID].metal = 0;
+        worlds[worldID].mines = 0;
+        worlds[worldID].pop = 0;
+        worlds[worldID].turns = 0;
+        worlds[worldID].limit = 0;
+        worlds[worldID].iships = 0;
+        worlds[worldID].pships = 0;
+
+        // Connections list.  A (, followed by a comma delimited list of 
+        // worlds, followed by a ).
+
+        // zzzjim: do I want to do this?  When reading the database it's already
+        //         empty, when reading the turn I want the database entries.
+        //         Then again, it's been working for 10 years...
+        worlds[worldID].connections.clear();
+
+        token = sc.next("\\(.+\\)");
+        if(DEBUG > 1)
+            System.out.printf("connection token: %s\n", token);
+
+        results = numPatt.matcher(token);
+        while(results.find())
+        {
+            int connection = Integer.parseInt(results.group());
+            if(DEBUG > 1)
+                System.out.printf("connection: %s\n", token);
+
+            worlds[worldID].connections.add(connection);
+
+            // Ensure the connecting world also connects to this world.
+            if(!worlds[connection].connections.contains(worldID)) {
+                worlds[connection].connections.add(worldID);
+            }
+        }
+        // TODO: sorting connections doesn't always work.  I've "fixed" it a
+        //       couple times but the fixes don't seem to stick.  Now that
+        //       I have a debugger I should take another stab at it.
+        Collections.sort(worlds[worldID].connections);
+
+        // Now get the owner.  It's surrounded by brackets.  Unowned worlds
+        // result in a null field.
+        Pattern owner = Pattern.compile("\\[(\\S+)\\]");
+        token = sc.next();
+        if(DEBUG > 1)
+            System.out.printf("owner token: %s\n", token);
+
+        results = owner.matcher(token);
+        String newOwner = (results.find()) ? results.group(1) : "";
+
+        if(!readDB)
+        {
+            if( (worlds[worldID].owner == null) ||
+                !(worlds[worldID].owner.equals(newOwner)))
+            {
+                ChangeOwner update = new ChangeOwner();
+                update.id = worldID;
+                update.oldOwner = worlds[worldID].owner;
+                update.newOwner = newOwner;
+                newOwners.add(update);
+            }
+        }
+        worlds[worldID].owner = newOwner;
+
+        if(DEBUG > 0)
+            System.out.printf("Owner: %s\n", worlds[worldID].owner);
+
+        // Get the convert's owner, if any.
+
+        if(sc.hasNext(Pattern.compile("C\\[\\S+\\]"))) {
+            token = sc.next();
+            if(DEBUG > 1)
+                System.out.printf("converts token: %s\n", token);
+
+            results = owner.matcher(token);
+            worlds[worldID].convertOwner =
+                    (results.find()) ? results.group(1) : "";
+        }
+
+        // Grab all the resources:
+        //
+        // (Industry=30,Metal=30,Mines=2,Population=50,Limit=100,Turns=1,
+        //     I-Ships=1,P-Ships=1)
+        //
+        // Worlds that span multiple lines have whitespace in their resource
+        // list, account for that.  
+
+        // Dang.  This works as a Pattern, but not in a Scanner :(
+        // token = sc.next("\\((.+)\\)");
+
+        // TODO:  Why did I '+=' this?  I know better.
+        while(!token.contains(")")) {
+            token += sc.next();
+        }
+
+        if(DEBUG > 1)
+            System.out.printf("Resources: %s\n", token);
+
+        String resource;
+
+        // Now parse our list of resource=value pairs.
+
+        Pattern tokenPatt = Pattern.compile("([A-Za-z\\-]+)=([0-9/CR]+)");
+        Matcher pair = tokenPatt.matcher(token);
+
+        while(pair.find()) {
+            if(DEBUG > 0)
+                System.out.printf("(%d)---> %s\n",
+                    pair.groupCount(), pair.group());
+
+            resource = pair.group(1);
+            GenericNumber info = parseStuff(pair.group(2));
+            if(DEBUG > 0)
+                System.out.printf("key: <%s>\n", resource);
+
+            switch(resource)
+            {
+                case "First":
+                    worlds[worldID].first = info.number;
+                    break;
+                case "Last":
+                    worlds[worldID].last = info.number;
+                    break;
+                case "Industry":
+                    worlds[worldID].industry = info.number;       
+                    worlds[worldID].usable = info.usable;       
+                    break;
+                case "Metal":
+                    worlds[worldID].metal = info.number;
+                    // Industry gets parsed before metal.  Keep track of how
+                    // much metal is available on my worlds, not counting HWs.
+                    if(myNames.contains(worlds[worldID].owner) &&
+                      (worlds[worldID].metal >= worlds[worldID].industry) &&
+                      (worlds[worldID].industry < 30) ) {
+                            availableMetal +=
+                                (worlds[worldID].metal - worlds[worldID].industry);
+
+                            if(verbose > 99)
+                                System.out.printf("Player %s adding %d metal, total %d\n",
+                                        worlds[worldID].owner, worlds[worldID].metal,
+                                        availableMetal);
+                    }
+                    break;
+                case "Mines":
+                    worlds[worldID].mines = info.number;
+                    break;
+                case "Population":
+                    worlds[worldID].pop = info.number;
+                    worlds[worldID].converts = info.converts;            
+                    worlds[worldID].robots = info.robots;            
+                    break;
+                case "Limit":
+                    worlds[worldID].limit = info.number;
+                    break;
+                case "Turns":
+                    worlds[worldID].turns = info.number;
+                    break;
+                case "I-Ships":
+                    worlds[worldID].iships = info.number;
+                    break;
+                case "P-Ships":
+                    worlds[worldID].pships = info.number;
+                    break;
+                case "Plunder":
+                    worlds[worldID].plunder = pair.group(2);
+                    break;
+                case "CG-Unload":
+                    worlds[worldID].cg = info.number;
+                    break;
+
+                case "Deaths":
+                default:
+                    if(!quietMode)
+                        System.out.printf("Ignored resource: <%s>\n", resource);
+            }
+        }
+
+        // This was tricky, how it works:
+        //     1.  When initializing the database set this to 0
+        //     2.  While initializing the database if First= is found this 
+        //         gets set
+        //     3.  When parsing the turn, when a new world is found this
+        //         field is still 0.
+        //     4.  When done parsing the world, if this is 0 set it to turn.
+        if(worlds[worldID].first == 0)
+            worlds[worldID].first = turn;
+
+        sc.close();
+    }
+
+    class PlayersMet {
+        // Grumble time.  Java doesn't allow arrays of generic objects, which
+        // is a pain in the ass.  Hence all the player[123] BS that seems
+        // really stupid.  Actually, it is really stupid.  But neccesary.
+        //
+        // Errr, now that I know Kotlin on Android Iknow Java has an object
+        // class that can be anything.  I should look at this code again...
+
+        // There are always 3 players, I only play multi.
+        ArrayList<String> player1 = new ArrayList<>();
+        ArrayList<String> player2 = new ArrayList<>();
+        ArrayList<String> player3 = new ArrayList<>();
+
+        int index = 0;
+
+        // Add players met.
+        void addPlayersMet(String record)
+        {
+            if(DEBUG > 0)
+                System.err.printf("addPlayersMet, record = %s\n\n", record);
+
+            Scanner sc = new Scanner(record).useDelimiter("\\)");
+            String token = sc.next();
+
+            Pattern tokenPatt = Pattern.compile("(\\[)([A-Z]+)(\\])");
+            Matcher player = tokenPatt.matcher(token);
+            ArrayList<String> met = new ArrayList<>();
+
+            while(player.find()) {
+                met.add(player.group(2));
+            }
+
+            // The player is met[0], we want to sort the ones met.
+            ArrayList<String> result = new ArrayList<>();
+            result.add(met.removeFirst());  // TODO: won't compile on command line
+            //result.add(met.remove(0));
+            Collections.sort(met);
+            result.addAll(met);
+            // System.out.println("Players: " + result + "\n");
+            switch(index++) {
+                case 0:  player1 = result; break;
+                case 1:  player2 = result; break;
+                case 2:  player3 = result; break;
+                default:
+                   System.err.println("Error in addPlayersMet: too many lines");
+            }
+            // myNames.add(result.toString());
+            // System.out.printf("Added player %s\n", result.toString());
+            sc.close();
+        }
+
+        // Print players met
+        void printPlayersMet() {
+            ArrayList<String> players;
+            String header;
+
+            for(int i = 0; i < 3; i++) {
+                players = switch (i) {
+                    case 0 -> player1;
+                    case 1 -> player2;
+                    case 2 -> player3;
+                    default ->    // can't happen, shut a warning up.
+                            null;
+                };
+
+                header = players.remove(0) + ": ";
+                List<String> printMe = players;
+                String foo = saneLineBreaks(header, printMe, 2);
+                System.out.println(foo);
+            }
+
+            System.out.println();
+            // Now print a list of all players seen.
+            player1.addAll(player2);
+            player1.addAll(player3);
+            List<String> all = player1.stream()
+                                      .distinct()
+                                      .sorted()
+                                      .collect(Collectors.toList());
+            System.out.println("--> " + all);
+            System.out.println(saneLineBreaks("All: ", all, 1));
+            //System.out.println(all);
+        }
+    }
+
+    //  Parse a player line.  These are the lines in the header that show the
+    //  score, worlds, keys, etc.
+    //
+    // This parses lines like:
+    //    [ENIF]: Pirate     (Score=1758,Gifts=2,Worlds=33,Keys=72,Ships=1422 etc
+
+    void parseName(String record) {
+        if(DEBUG > 0)
+            System.out.printf("parseName, record = %s\n", record);
+
+        playersMet.addPlayersMet(record);
+
+        Scanner sc = new Scanner(record).useDelimiter("\\)");
+        String token;       // It's handy to see what the scanner gave us.
+
+        token = sc.next();
+        if(DEBUG > 1)
+            System.out.printf("name Resources: %s\n", token);
+
+        String resource;
+
+        // Now parse our list of resource=value pairs.
+
+        Pattern tokenPatt = Pattern.compile("([A-Za-z\\-]+)=([0-9/CR]+)");
+        Matcher pair = tokenPatt.matcher(token);
+
+        while(pair.find())
+        {
+            if(DEBUG > 0)
+                System.out.printf("(%d)---> %s\n",
+                    pair.groupCount(), pair.group());
+
+            resource = pair.group(1);
+            GenericNumber info = parseStuff(pair.group(2));
+            if(DEBUG > 0)
+                System.out.printf("key: <%s>\n", resource);
+
+            switch(resource)
+            {
+                case "Worlds":
+                    totalWorlds   += info.number;    break;
+                case "Ships":
+                    totalShips    += info.number;    break;
+                case "Keys":
+                    totalKeys     += info.number;    break;
+                case "Industry":
+                    totalIndustry += info.number;    break;
+                case "Mines":
+                    totalMines    += info.number;    break;
+                default:
+                    // ignore everything else;
+            }
+        }
+
+        sc.close();
+    }
+
+    //  Parse the turn sheet.
+    //
+    //  What I'm parsing:
+    //
+    //  1)  In the header look for something like:
+    //          "Game SW-A1385, Turn 3, [ENIF]", we want the turn number
+    //
+    //  1.5)  In the header look for "[foo]:", foo is a player name and the left
+    //        bracket is at the start of the line.
+    //
+    //  2)  "------------" denotes the end of the header and start of the body.
+    //
+    //  3)  The body has stuff like:
+    //     W74 (71,178,232) [CERES] (Industry=30,Metal=30,Mines=2,Population=50,
+    //           Limit=100,Turns=1,I-Ships=1,P-Ships=1)
+    //        F12[CERES]=0
+    //        F189[CERES]=0
+    //        F225[CERES]=0
+    //        F227[CERES]=0
+    //        F243[CERES]=0
+    //
+    //     Can also look like:
+    //      W134 (130,150,160,199) [ENIF] (Captured,Lost by [WYRM],Industry=1/0,
+    //     or
+    //      W83 (59,99,181,198) [ENIF] (Captured,Industry=1,Metal=3,
+    //
+    //  4)  "============" denotes the end of the body
+    //
+    // If readDB is true we're initializing the database, else we're parsing
+    // a new turn.
+
+    private void parseTurn(String inFile, boolean readDB) {
+        if(DEBUG > 0)
+            System.out.printf("Parsing: %s (%d)\n", inFile, DEBUG);
+
+        boolean inBody = false;     // goes true at step 2 above
+        boolean done = false;       // goes true at step 4 above.
+        Matcher results;
+
+        // Regex's can be understood from reading Chapter 1 of Friedl's book
+        // Mastering Regular Expressions, 1st edition.
+
+        Pattern turnPatt = Pattern.compile("Game\\s+(\\S+),.+Turn\\s+([0-9]+)");
+        Pattern namePatt = Pattern.compile("^\\[[A-Z]+\\]");
+        Pattern endHeader = Pattern.compile("-{10,}");
+        Pattern endTurn   = Pattern.compile("={10,}");
+        Pattern worldPatt = Pattern.compile("^W[0-9]+");
+
+        Path path = Paths.get(inFile);
+        String record = "mt";
+
+        try {
+            BufferedReader reader =
+                    Files.newBufferedReader(path, StandardCharsets.US_ASCII);
+        
+            while( (record = getRecord(reader)) != null) {
+                if(DEBUG > 1)
+                    System.out.printf("Record: %s\n", record);
+
+                if(!inBody) {
+                    // See if it's a player name, save if it is
+                    String name = getName(record);
+                    if(name != null)
+                        myNames.add(name);
+
+                    // still in the headers, look for game ID and turn number.
+                    results = turnPatt.matcher(record);
+                    if(results.find()) {
+                        gameID = results.group(1);
+                        gameTurn = Integer.parseInt(results.group(2));
+                        if (DEBUG > 1)
+                            System.out.printf("---Game %s Turn %d\n",
+                                    gameID, gameTurn);
+                    } else {
+                        // See if we're out of the headers yet.
+                        results = endHeader.matcher(record);
+                        if(results.find()) {
+                            inBody = true;
+                            if(DEBUG > 3)
+                                System.out.print("in body\n");
+                        }
+                    }
+                    // Look for player lines, those lines with the player name,
+                    // score, gifts, worlds, keys, etc.
+                    //
+                    // zzzjim 7/17/24 - this is always in the header, move it when stuff works.
+                    results = namePatt.matcher(record);
+                    if(results.find()) {
+                        parseName(record);
+                    }
+                }
+
+                // We're out of the headers if we get this far
+
+                else if(!done) {
+                    results = endTurn.matcher(record);
+                    if(results.find()) {
+                        done = true;
+                        if(DEBUG > 3)
+                            System.out.print("done\n");
+                    } else {
+                        results = worldPatt.matcher(record);
+                        if(results.find())
+                            parseWorld(gameTurn, record, readDB);
+                    }
+                }
+            }
+        }
+        catch(IOException ex) {
+            System.out.printf("Can't open %s for reading: \n%s", inFile, ex);
+            System.out.printf("Record: %s: \n", record);
+            System.out.printf("Directory: %s\n", System.getProperty("inFile"));
+            System.out.printf(". Directory: %s\n", System.getProperty("."));
+        }
+    }
+
+    // If a player name is found return it, else return null.
+    // copied this from elsewhere, I should make elsewhere use it.
+    private String getName(String record) {
+        Scanner sc = new Scanner(record).useDelimiter("\\)");
+        String token = sc.next();
+
+        Pattern tokenPatt = Pattern.compile("(\\[)([A-Z]+)(\\])");
+        Matcher player = tokenPatt.matcher(token);
+        return(player.find() ? player.group(2) : null);
+    }
+
+    /**
+     *  Save the worlds to a file.  
+     *
+     *  1) save current stdout
+     *  2) redirect stdout to a file
+     *  3) print worlds to stdout
+     *  4) redirect stdout to stdout
+     */
+
+    private void saveWorlds() {
+        final PrintStream old = System.out;
+        try {
+            System.setOut(new PrintStream(saveFile));
+            showWorlds(worlds);
+            System.setOut(old);
+        }
+        catch (IOException ex) {
+            System.out.printf("Can't open %s for writing: \n%s", saveFile, ex);
+        }
+    }
+
+    private void helpMe(int whoops)
+    {
+        String[] msg = {
+        "Keeps a database of worlds visited with the first and last turn seen.",
+        "Results are stored in file Database.txt.",
+        "Tells you which worlds changed owners.",
+        "For mapping, if worlds A and B connect to C, but you can't see C,",
+        "it shows C connects to A and B",
+        "",
+        "Run via \"java -jar Starweb.jar starweb-turn\"",
+        "(e.g. java -jar Starweb.jar  SW-BM_287 T10.txt",
+        "",
+        "    -I         Use when running from IntelliJ",
+        "    -i ind   - Print worlds with IND >= ind",
+        "    -p pop   - Print worlds with POP >= pop",
+        "    -m metal - Print worlds with METAL >= metal",
+        "    -x         Don't update the database (Database.txt)",
+        "    -l         Print Worlds in Population Limit descending order",
+        "    -M         Print Worlds in available metal descending order",
+        "    -P         Print players met",
+        "    -v         Print debug messsages",
+        "    -h         Print this message",
+        };
+
+        if(whoops != 'h')
+            System.err.printf("Unknown flag: %s", whoops);
+        for(String s: msg)
+            System.err.println(s);
+    }
+
+    // Parse command line options, returns the file to evaluate.
+
+    private String parseArgs(String[] args)
+    {
+        GetOpt g = new GetOpt(args, "hi:p:m:IMlvxP");
+        int arg;
+        String fileName = "";
+        
+        if(verbose > 0)
+            System.out.println("Working Directory = " +
+                    System.getProperty("user.dir"));
+        
+        g.optErr = true;
+        while( (arg = g.getopt()) != -1)
+        {
+            switch(arg)
+            {
+                case 'i':
+                    minInd   = Integer.parseInt(g.optArgGet());
+                    dontSave = true;
+                    break;
+                case 'p':
+                    minPop   = Integer.parseInt(g.optArgGet());
+                    dontSave = true;
+                    break;
+                case 'm':
+                    minMetal = Integer.parseInt(g.optArgGet());
+                    dontSave = true;
+                    break;
+                case 'l':
+                    showLimits = true;
+                    break;
+                case 'I':
+                    runningFromIntelliJ = true;
+                    break;
+                case 'M':
+                    justMetal = true;
+                    break;
+                case 'P':
+                    printPlayers = true;
+                    break;
+                case 'x':
+                    dontSave = true;
+                    break;
+                case 'v':
+                    // Can't I just see if verbose is 0?
+                    quietMode = false;
+                    verbose++;
+                    break;
+                case 'h':
+                    // fallthrough
+                default:
+                    helpMe(arg);
+                    System.exit(-1);
+                    break;      // stupid warnings...
+            }
+        }
+
+        if(showLimits || justMetal)
+            fileName = "unused";
+        else {
+            try {
+                fileName = args[g.optIndexGet()];
+            } catch (Exception e) {
+                System.err.println("No input file provided");
+                System.exit(-1);
+            }
+        }
+
+        if (verbose > 0)
+            System.out.println("input file: " + fileName);
+        return fileName;
+    }
+
+    // Trying to figure some stuff out.
+    private void dumpProperties() {
+        Properties p = System.getProperties();
+        Enumeration<Object> keys = p.keys();
+        System.out.println("Before line.separator: " + p.get("line.separator"));
+        p.put("line.separator", "\n");
+        System.setProperties(p);
+        p = System.getProperties();
+        System.out.println("After line.separator: " + p.get("line.separator"));
+        if(verbose > 99)    // if(false) says "always false".  Well, duh.
+        {
+            while (keys.hasMoreElements()) {
+              String key = (String)keys.nextElement();
+              String value = (String)p.get(key);
+              System.out.println(key + ": " + value);
+            }
+        }
+    }
+
+    /*
+     *  From the command line the current working directory is .
+     *  From IntelliJ the current working directory is ..
+     *
+     * This works when running from the debugger, else it doesn't.  Replaced
+     * with the -I flag (runningFromIntelliJ).  Keeping for reference.
+     */
+    public static boolean xrunningFromIntelliJ() {
+        String classPath = System.getProperty("java.class.path");
+        System.out.println("classPath: " + classPath);
+        return classPath.contains("idea_rt.jar");
+    }
+
+    /**
+     * Print the worlds according to population limit in descending order.
+     * Only the world number, owner, population, and pop limit are printed.
+     *
+     * Be nice if I could just use a set with the limit as the key, but
+     * the limit is not unique.
+     *
+     * zzz TODO:  Count converts.  Print headers over the columns....
+     */
+    private void printLimits() {
+        class Rock implements Comparable<Rock> {
+            final int worldNumber, pop, converts, popLimit;
+            final String owner;
+            Rock(int id, String _owner, int _pop, int _converts, int _popLimit) {
+                worldNumber = id;
+                owner = _owner;
+                pop = _pop;
+                converts = _converts;
+                popLimit = _popLimit;
+            }
+
+            // Sort our rocks in descending order
+            @Override public int compareTo(Rock other) {
+                return Integer.compare(other.popLimit, this.popLimit);
+            }
+
+            public String toString() {
+                String people;
+                if (pop == 0 && converts == 0)
+                    people = "0";
+                else if (pop > 0 && converts == 0)
+                    people = String.format("%3d", pop);
+                else if (pop > 0 && converts > 0)
+                    people = String.format("%d/%dC", pop, converts);
+                else // if(pop == 0 && converts > 0)
+                    people = String.format("%dC", converts);
+
+                return (String.format("W%3d  %8s  %8s  %3d",
+                        worldNumber, owner, people, popLimit));
+            }
+        }
+
+        List<Rock> rocks = new ArrayList<>();
+
+        // Hmm, I don't have an "official" way of indicating a world I've seen.
+        // Can't use first, owner, connections, m, pop, limit.....
+        for(int i = 1; i < worlds.length; i++) {
+            if(worlds[i].first != 0 && worlds[i].last != 0)
+                rocks.add(new Rock(i, worlds[i].owner, worlds[i].pop,
+                        worlds[i].converts, worlds[i].limit));
+        }
+
+        Collections.sort(rocks);
+        for(Rock rock : rocks)
+            System.out.println(rock.toString());
+    }
+    /**
+     * Print the worlds according to metal available in descending order.
+     * Only the world number, owner, and available metal are printed.
+     *
+     * printLimit turned out to be pretty useful so I cloned it for this.
+     *
+     * TODO:  Only print worlds I own.
+     */
+    private void printMetal() {
+        class Rock implements Comparable<Rock> {
+            final int worldNumber, metal, mines;
+            final String owner;
+            Rock(int id, String _owner, int _metal, int _mines) {
+                worldNumber = id;
+                owner = _owner;
+                metal = _metal;
+                mines = _mines;
+            }
+
+            // Sort our rocks in descending order
+            @Override public int compareTo(Rock other) {
+                return Integer.compare(other.metal, this.metal);
+            }
+
+            public String toString() {
+                return(String.format("W%3d  %8s  %3d  %2d",
+                                worldNumber, owner, metal, mines));
+            }
+        }
+
+        List<Rock> rocks = new ArrayList<>();
+
+        // Hmm, I don't have an "official" way of indicating a world I've seen.
+        // Can't use first, owner, connections, m, pop, limit.....
+        for(int i = 1; i < worlds.length; i++) {
+            if(worlds[i].first != 0 && worlds[i].last != 0)
+                rocks.add(new Rock(i, worlds[i].owner, worlds[i].metal, worlds[i].mines));
+        }
+
+        Collections.sort(rocks);
+        for(Rock rock : rocks)
+            System.out.println(rock.toString());
+    }
+
+    void run(String[] args) {
+        useUnusedStuff();
+
+        String inFile = parseArgs(args);
+
+        // From the command line (where I always run this) stuff is in '.'.
+        // From Intellij (where I debug it) stuff is in 'src/.'.
+        if(runningFromIntelliJ)
+            saveFile = "src/" + saveFile;
+        if(verbose > 3)
+            System.out.println("Using database " + saveFile);
+
+        worlds = new World[MAX_WORLDS];
+        for(int i = 0; i < worlds.length; i++) {
+            worlds[i] = new World();
+            worlds[i].number = i;       // Handy for a world to id itself
+        }
+
+        if(verbose > 1)
+            System.out.println("parse history");
+
+        parseTurn(saveFile, true);        // read saved database
+
+        if(showLimits) {
+            // If pop limits are wanted I never want anything else.
+            printLimits();
+        } else if(justMetal) {
+            printMetal();
+        } else {
+            if (verbose > 1)
+                System.out.println("parse turn from %s + inFile");
+            parseTurn(inFile, false);         // read current turn.
+
+            if (verbose > 1)
+                System.out.println("show worlds");
+            if (!quietMode)
+                showWorlds(worlds);                   // print worlds to sdout
+
+            if (verbose > 1)
+                System.out.println("saving worlds");
+            if (!dontSave)
+                saveWorlds();                         // Save the updated database
+        }
+    }
+
+    // Get rid of 'unused' warnings for stuff I don't want to fix
+    private void useUnusedStuff() {
+        if(verbose > 99) {
+            List<String> junk = getRecords("foo");
+            System.out.print(junk);
+            junk = getRecords("bar");
+            System.out.print(junk);
+
+            if(xrunningFromIntelliJ())
+                System.out.println("you should never see this");
+
+            var foo = saneLineBreaks("junk", junk, 2, 3);
+            System.out.print(foo);
+
+            foo = saneLineBreaks(junk, 3);
+            System.out.print(foo);
+
+            foo = saneLineBreaks(junk, 4);  // this is getting stupid
+            System.out.print(foo);
+
+            PlayersMet playersMet = new PlayersMet();
+            playersMet.printPlayersMet();
+            playersMet.addPlayersMet("foo");
+            dumpProperties();
+
+        }
+    }
+
+    public static void main(String[] args)
+    {
+        Starweb sw = new Starweb();
+        sw.run(args);
+    }
+}
+

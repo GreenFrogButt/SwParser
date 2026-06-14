@@ -1,0 +1,329 @@
+﻿  Subject:
+SW-BM/111 T11 [CERES] #1234
+From:
+Play-By- Mail <games@rickloomispbm.com>
+Date:
+1/1/1969, 1:28 PM
+To:
+
+(Frodo Baggins)
+Game SW-BM/111, Turn 11, [CERES]
+
+[CERES]: Pirate
+   (Score=481,Worlds=19,Keys=16,Ships=188,Industry=38,Mines=67,People=1137,
+   Artifacts=9,Met=[TEJAT],Met=[NEPTUNE],Ally/Loader=[HATYSA],Met=[HELIOS],
+   Met=[REGULUS],Met=[DENEB],Ally/Loader=[MARS],Met=[ARIES],Met=[URANUS],
+   Met=[BELLATRIX],Met=[SATURN])
+
+[HATYSA]: Merchant
+   (Score=1364,Worlds=9,Keys=11,Ships=117,Industry=32,Mines=32,People=722,
+   Artifacts=5,Ally/Loader=[CERES],Met=[TEJAT],Met=[NEPTUNE],Met=[HELIOS],
+   Met=[REGULUS],Met=[DENEB],Ally/Loader=[MARS],Met=[URANUS],Met=[SATURN])
+
+[MARS]: Berserker
+   (Score=101,Worlds=23,Keys=15,Ships=178,Industry=41,Mines=71,People=1201,
+   Robots=50,Artifacts=9,Ally/Loader=[CERES],Met=[TEJAT],Met=[NEPTUNE],
+   Ally/Loader=[HATYSA],Met=[HELIOS],Met=[REGULUS],Met=[DENEB],Met=[ARIES],
+   Met=[URANUS],Met=[BELLATRIX])
+
+   ------------
+
+W3 (13,176,223,251) [HATYSA] C[IOTA] (Metal=15,Mines=4,Population=115/8C,
+      Limit=115,Turns=3)
+   F109[HATYSA]=8 (Moved)
+   (F68[HATYSA]-->W13 F125[MARS]-->W13 F222[HATYSA]-->W13 F241[MARS]-->W223)
+
+W9 (58,76,122) [MARS] C[FRODO] (Metal=10,Mines=2,Population=60C,Limit=78,
+      Turns=2) V97:Vegan Sphinx
+   (F34[HATYSA]-->W58)
+
+W13 (3,39,143) [HATYSA] (Industry=30,Metal=36,Mines=3,Population=100R,
+      Limit=100,Turns=4)  V38:Arcturian Lodestar  V54:Golden Sword
+      V57:Vegan Sword  V65:Titanium Sepulchre  V71:Platinum Moonstone
+   F197[CERES]=4 (Moved,Cargo=4)
+   F68[HATYSA]=5 (Moved,Cargo=10)
+   F222[HATYSA]=6 (Moved,Cargo=12)
+   F125[MARS]=32 (Moved)  V41:Platinum Shekel
+   (F109[HATYSA]-->W3 F112[MARS]-->W143 F204[CERES]-->W39 F241[MARS]-->W3)
+
+W17 (69,89,253) [MARS] (Industry=1,Metal=27,Mines=5,Population=55,Limit=55,
+      Turns=7,I-Ships=4)
+   F254[MARS]=6 (Moved,Cargo=1)
+   F97[NEPTUNE]=10 (Moved)
+
+W20 (163,247,252) [CERES] (Industry=30,Metal=48,Mines=3,Population=100,
+      Limit=100,Turns=4)  V2:Nebula Scrolls, Vol. II  V15:Titanium Crown
+      V46:Blessed Shekel  V72:Ancient Moonstone  V88:Arcturian Stardust
+   F132[CERES]=2 (Moved,Cargo=2)
+   F237[CERES]=10 (Moved,Cargo=10)
+   F243[HATYSA]=14 (Moved,Cargo=28)
+   (F110[HATYSA]-->W252 F134[HATYSA]-->W247 F141[HATYSA]-->W247
+   F206[HATYSA]-->W163)
+
+W26 (58,223,251) [MARS] (Industry=30,Metal=38,Mines=3,Population=50R,
+      Limit=100,Turns=4)  V17:Vegan Crown  V27:Vegan Pyramid
+      V66:Blessed Sepulchre  V73:Silver Moonstone  V89:Radiant Stardust
+   F34[HATYSA]=8 (Moved,Cargo=15)
+   F45[MARS]=4 (Moved,Cargo=4)
+   F72[MARS]=9 (Moved,Cargo=9)
+   (F18[MARS]-->W58 F19[MARS]-->W58 F125[MARS]-->W223 F171[HATYSA]-->W251)
+
+W32 (47,58,244) [MARS] (Industry=2,Metal=2,Mines=2,Population=40,Limit=50,
+      Turns=2,I-Ships=4)
+   (F19[MARS]-->W47)
+
+W39 (13,56,163) [HATYSA] (Industry=1,Metal=5,Mines=3,Population=94,Limit=94,
+      Turns=3,I-Ships=3)
+   F250[CERES]=3 (Moved)
+   (F204[CERES]-->W163)
+
+W47 (32,136) [MARS] (Industry=1,Metal=5,Mines=3,Population=35,Limit=85,
+      Turns=4,I-Ships=2)
+   F19[MARS]=1 (Moved)
+
+W55 (128,153,188,218) [CERES] (Industry=1,Metal=6,Mines=5,Population=44,
+      Limit=110,Turns=1,I-Ships=2)  V70:Plastic Moonstone
+   (F132[CERES]-->W218 F224[REGULUS]-->W128)
+
+W56 (39,69,212) [HATYSA] (Metal=8,Mines=2,Population=63,Limit=63,Turns=2,
+      P-Ships=1)
+   F15[MARS]=6 (Moved)
+   F108[MARS]=29 (Moved)
+
+W58 (9,26,32) [MARS] (Industry=1,Metal=15,Mines=6,Population=101,Limit=101,
+      Turns=3,I-Ships=2)
+   F18[MARS]=10 (Moved)
+   (F19[MARS]-->W32 F34[HATYSA]-->W26)
+
+W66 (86,116,199) [] (B*L*A*C*K H*O*L*E)
+   F240[]=0 (Lost by [CERES],Moved)
+
+W69 (17,56,156) [MARS] (Industry=2,Metal=3,Mines=3,Population=29,Limit=29,
+      Turns=1,I-Ships=3)
+   (F108[MARS]-->W56)
+
+W75 (147,176,249) [HATYSA] (Metal=7,Mines=7,Population=42,Limit=127,Turns=1,
+      P-Ships=1)
+   (F222[HATYSA]-->W176)
+
+W76 (9,145,156) [MARS] (Industry=1,Metal=2,Mines=2,Population=28,Limit=28,
+      Turns=1,I-Ships=6)
+
+W77 (172,214,241) [CERES] (Industry=1/0,Metal=15,Mines=3,Population=69,
+      Limit=75,Turns=4,I-Ships=1)
+   F21[CERES]=1 (Moved)
+   F26[CERES]=12 (Moved)
+   F61[CERES]=7 (Moved)
+   F76[CERES]=13 (AF37)
+   F85[CERES]=7 (Moved)
+   F94[CERES]=1 (AF3)
+   F103[CERES]=9 (AF16)
+   F205[CERES]=11 (AF49)
+   F209[CERES]=7 (AF71)
+   F217[CERES]=7 (Moved)
+   F234[CERES]=22 (Moved)
+   F3[NEPTUNE]=2 (Moved)
+   F16[NEPTUNE]=12 (AF229)
+   F31[NEPTUNE]=16 (AF178)
+   F37[NEPTUNE]=1 (Moved)
+   F49[NEPTUNE]=15 (AF229)
+   F71[NEPTUNE]=3 (Moved)
+   F86[NEPTUNE]=16 (AF94)
+   F129[NEPTUNE]=1 (Moved)
+   F166[NEPTUNE]=2 (Moved)
+   F207[NEPTUNE]=12 (AF178)
+   F212[NEPTUNE]=38 (Moved)
+   F245[NEPTUNE]=10 (Moved)
+   F93[]=0
+   F178[]=0 (Lost by [CERES],AF31)
+   F192[]=0
+   F229[]=0 (Lost by [CERES],AF207)
+   (F3[NEPTUNE]-->W214 F37[NEPTUNE]-->W214 F71[NEPTUNE]-->W214)
+
+W86 (66,163,241) [HATYSA] (Industry=1,Metal=3,Mines=3,Population=80,Limit=83,
+      Turns=1,I-Ships=3)
+   F204[CERES]=35 (Moved)
+   F206[HATYSA]=25 (Moved)
+   (F237[CERES]-->W163 F243[HATYSA]-->W163)
+
+W87 (100,137,168) [MARS] (Captured,Lost by [NEPTUNE],Metal=12,Mines=2,
+      Population=38,Limit=61,Turns=1)
+   F90[MARS]=2 (AH)
+   (F54[MARS]-->W168 F210[MARS]-->W137)
+
+W89 (17,165,248) [MARS] (Metal=18,Mines=3,Population=69,Limit=69,Turns=3,
+      P-Ships=3(Ambush))
+   F226[NEPTUNE]=8 (Moved)
+   (F44[NEPTUNE]-->W248)
+
+W91 (34,169,244) [MARS] (Industry=1,Metal=11,Mines=3,Population=26,Limit=92,
+      Turns=5,I-Ships=3)
+
+W100 (87,169,244) [MARS] (Industry=1,Metal=1,Mines=1,Population=25,Limit=32,
+      Turns=6,I-Ships=5)
+   F131[MARS]=1 (Moved)
+
+W105 (110,186,227) [MARS] (Metal=10,Mines=4,Population=44,Limit=60,Turns=1,
+      P-Ships=1)
+
+W110 (105,136,251) [HATYSA] (Metal=15,Mines=3,Population=48,Limit=68,Turns=2,
+      P-Ships=1)
+   F171[HATYSA]=8 (Moved)
+   (F45[MARS]-->W251)
+
+W116 (66,174,247) [CERES] (Metal=18,Mines=3,Population=104,Limit=148,Turns=2,
+      P-Ships=1)  V37:Vegan Lodestar
+   F141[HATYSA]=9 (Moved)
+
+W117 (135,188,204,218) [CERES] (Metal=10,Mines=4,Population=55,Limit=130,
+      Turns=1,P-Ships=1)  V60:Plastic Sepulchre
+
+W119 (129,161,174) [CERES] (Industry=1,Metal=11,Mines=4,Population=31,
+      Limit=100,Turns=1,I-Ships=3)
+
+W122 (9,35,145) [MARS] (Metal=4,Mines=4,Population=43,Limit=100,Turns=1,
+      P-Ships=2)
+   (F34[HATYSA]-->W9)
+
+W135 (117,147,252) [CERES] (Metal=6,Mines=3,Population=60,Limit=85,Turns=2,
+      P-Ships=1)  V67:Vegan Sepulchre
+   F112[MARS]=6 (Moved)
+
+W136 (47,110,243) [MARS] (Metal=1,Mines=1,Population=27,Limit=38,Turns=7,
+      P-Ships=1)
+   (F45[MARS]-->W110)
+
+W137 (87,172) [NEPTUNE] (Metal=40,Mines=6,Population=41,Limit=120,Turns=7,
+      P-Ships=1)
+   F210[MARS]=15 (Moved)
+
+W143 (13,176,252) [HATYSA] (Metal=10,Mines=5,Population=101,Limit=101,Turns=3,
+      P-Ships=1)
+   F110[HATYSA]=5 (Moved)
+   (F112[MARS]-->W252 F197[CERES]-->W13)
+
+W147 (75,135,204) [CERES] (Industry=1,Metal=2,Mines=2,Population=27,Limit=27,
+      Turns=1,I-Ships=6)
+
+W150 (120,149,169) [NEPTUNE] (Industry=1/0,Metal=25,Mines=6,Population=68,
+      Limit=76,Turns=1,I-Ships=2)
+   F48[MARS]=8 (Moved)
+
+W153 (55,202,245) [CERES] (Industry=1,Metal=40,Mines=7,Population=73,
+      Limit=170,Turns=7,I-Ships=6)
+
+W156 (69,76,223) [MARS] (Metal=12,Mines=6,Population=104,Limit=190,Turns=2,
+      P-Ships=1)
+
+W161 (119,245,247) [CERES] (Metal=7,Mines=3,Population=52,Limit=52,Turns=2,
+      P-Ships=1)
+
+W163 (20,39,86) [CERES] (Population=95,Limit=95,P-Ships=3)
+   (F204[CERES]-->W86 F206[HATYSA]-->W86 F237[CERES]-->W20 F243[HATYSA]-->W20
+   F250[CERES]-->W39)
+
+W168 (87,209,243) [MARS] (Captured,Lost by [ARIES],Metal=21,Mines=4,
+      Population=37,Limit=147,Turns=1)
+   F54[MARS]=3 (Moved)
+
+W169 (91,100,150) [MARS] (Metal=12,Mines=2,Population=55,Limit=104,Turns=2,
+      P-Ships=1)  V25:Titanium Pyramid
+   (F48[MARS]-->W150 F131[MARS]-->W100)
+
+W172 (77,137,149,206) [CERES] (Metal=12,Mines=3,Population=40,Limit=85,
+      Turns=2,P-Ships=1)
+   (F21[CERES]-->W77 F26[CERES]-->W77)
+
+W174 (116,119,192) [CERES] (Industry=1,Metal=5,Mines=2,Population=52,
+      Limit=144,Turns=7,I-Ships=4)
+
+W176 (3,75,143,186) [HATYSA] (Metal=8,Mines=2,Population=79,Limit=79,Turns=2,
+      P-Ships=1)
+   (F222[HATYSA]-->W3)
+
+W186 (105,176,251) [MARS] (Metal=5,Mines=5,Population=61,Limit=101,Turns=2,
+      P-Ships=1)
+   (F68[HATYSA]-->W251)
+
+W200 (127,166,253) [MARS] (Industry=1,Metal=1,Mines=1,Population=54,Limit=86,
+      Turns=2,I-Ships=1)  V87:Vegan Stardust
+   (F254[MARS]-->W253)
+
+W212 (56,241,248) [] (Metal=3,Mines=3,Population=67,Limit=67,P-Ships=3)
+   F44[NEPTUNE]=22 (Moved)
+   F58[NEPTUNE]=5 (Moved)
+   F101[NEPTUNE]=33 (Moved)
+   F114[NEPTUNE]=24 (AF217)
+   F200[NEPTUNE]=6 (Moved)
+   F223[NEPTUNE]=16 (AF61)
+   F199[URANUS]=8 (AF85,At-Peace)
+   (F15[MARS]-->W56 F58[NEPTUNE]-->W248 F61[CERES]-->W241 F85[CERES]-->W241
+   F217[CERES]-->W241 F252[HATYSA]-->W241)
+
+W218 (55,117,247) [] (Lost by [FAFNIR],BUSTED,Population=0,Deaths=100)
+   F213[CERES]=126 (D)
+
+W223 (3,26,156) [MARS] (Metal=3,Mines=3,Population=95,Limit=95,Turns=3,
+      P-Ships=1)
+   F241[MARS]=3 (Moved)
+   (F72[MARS]-->W26 F125[MARS]-->W3)
+
+W241 (77,86,212) [CERES] (Metal=10,Mines=6,Population=31,Limit=73,Turns=7,
+      P-Ships=1)
+   F252[HATYSA]=11 (Moved)
+   (F61[CERES]-->W77 F85[CERES]-->W77 F217[CERES]-->W77 F234[CERES]-->W77
+   F243[HATYSA]-->W86)
+
+W244 (32,91,100) [MARS] (Metal=7,Mines=3,Population=61,Limit=73,Turns=1,
+      P-Ships=1)
+
+W245 (38,153,161) [CERES] (Industry=1,Metal=4,Mines=3,Population=23,Limit=40,
+      Turns=1,I-Ships=2)
+
+W247 (20,116,161,218) [CERES] (Industry=1,Metal=17,Mines=8,Population=88,
+      Limit=88,Turns=3,I-Ships=1)
+   F134[HATYSA]=7 (Moved)
+   (F132[CERES]-->W20 F141[HATYSA]-->W116)
+
+W251 (3,26,110,186) [MARS] (Metal=7,Mines=3,Population=114,Limit=114,Turns=3,
+      P-Ships=1)
+   (F45[MARS]-->W26 F68[HATYSA]-->W3 F171[HATYSA]-->W110)
+
+W252 (20,135,143) [CERES] (Metal=3,Mines=3,Population=126,Limit=127,Turns=3,
+      P-Ships=1)
+   (F110[HATYSA]-->W143 F112[MARS]-->W135 F197[CERES]-->W143)
+
+W253 (17,165,173,200) [NEPTUNE] (Captured,Lost by [MARS],Metal=49,Mines=7,
+      Population=50,Limit=143,Turns=1)  V26:Blessed Pyramid
+   F118[NEPTUNE]=4 (Moved)
+   (F97[NEPTUNE]-->W17 F254[MARS]-->W17)
+
+Players you can see this turn:  [URANUS]  [ARIES]  [NEPTUNE]  [REGULUS]
+
+Their scores (not necessarily in order):  55  320  526  892
+
+Orders=90 <errors and comments in angle-brackets>:
+====================
+F204U F109U F112U F241U F109T2F204 F109W3 F112W143W252W135 F241W3W223
+F241T1F204 W13B30F204 F204W39W163W86 F110U F134U F141U F206U F141T2F206
+F141W247W116 W20B2F134 F134W247 W20B1F110 F110W252W143 W20B18F206 F206W163W86
+F171U F18U F19U F125U W26B3F171 F171W251W110 F19T2F18 F18W58 F19W58W32W47
+W26B27F125 F125W223W3W13 F132L F132W218W247W20 F108W56 I69T4F108 F222L
+F222W176W3W13 F76T5F94 F94AF3 F76T1F103 F103AF16 F76T1F178 F178AF31 F76AF37
+F205AF49 F209AF71 F229AF207 P86T3F237 I86T1F237 F237L F237W163W20 F54W168
+F210T1F90 F90AH F210W137 F34T1P F34L F34W9W58W26 F45L F45W110W251W26 F250W39
+F250T3P F48W150 F131T1P F131W100 F21T1P F21W77 F26W77 F68L F68W251W3W13 F254L
+F254W253W17 F15W56 F217T8F61 F61W241W77 F252T7F85 F85W241W77 F217W241W77
+F252W241 F72L F72W26 F243T20F234 F234W77 F243L F243W86W163W20 F197L
+F197W143W13 <90>
+====================
+Due Friday, September 19 at 6:00 PM MST
+
+
+
+Rick Loomis PBM
+PO Box 8467
+Scottsdale AZ 85252-8467
+480-945-6917
+Email & PayPal: games@rickloomispbm.com
+https://www.rickloomispbm.com

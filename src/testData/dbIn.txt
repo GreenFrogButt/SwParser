@@ -1,0 +1,278 @@
+Player [HATYSA, MARS, CERES]
+Worlds  50  Keys  44  Ships  420  Ind 111  Mines 158
+Available metal: 386
+
+
+World 127 was     null, now    DENEB
+World 137 was     null, now  NEPTUNE
+World 163 was  NEPTUNE, now    CERES
+World 164 was     null, now    DENEB
+World 165 was    DENEB, now         
+World 166 was     null, now    DENEB
+World 169 was  NEPTUNE, now     MARS
+World 172 was    DENEB, now    CERES
+World 200 was    DENEB, now     MARS
+World 206 was     null, now BELLATRIX
+
+Game SW-BM/111, Turn 10
+
+  ------------
+
+W3 (13,176,223,251) [HATYSA] (First=2,Last=10,Metal=11,Mines=4,Population=110,
+        Limit=115,Turns=2)
+
+W9 (58,76,122) [MARS] (First=3,Last=10,Metal=8,Mines=2,Population=55,Limit=78,
+        Turns=1)
+
+W11 (129,210) [null] (First=6,Last=0)
+
+W13 (3,39,143) [HATYSA] (First=1,Last=10,Industry=30,Metal=31,Mines=3,
+        Population=100,Limit=100,Turns=3)
+
+W17 (69,89,253) [MARS] (First=5,Last=10,Industry=1,Metal=23,Mines=5,
+        Population=52,Limit=55,Turns=6,I-Ships=3)
+
+W19 (138,210,232) [null] (First=6,Last=0)
+
+W20 (163,247,252) [CERES] (First=1,Last=10,Industry=30/21,Metal=21,Mines=3,
+        Population=100,Limit=100,Turns=3)
+
+W26 (58,223,251) [MARS] (First=1,Last=10,Industry=30,Metal=39,Mines=3,
+        Population=50R,Limit=100,Turns=3)
+
+W32 (47,58,244) [MARS] (First=3,Last=10,Industry=2,Metal=2,Mines=2,
+        Population=37,Limit=50,Turns=1,I-Ships=2)
+
+W34 (8,35,91) [] (First=6,Last=7)
+
+W35 (34,122,141) [HELIOS] (First=6,Last=7,Metal=3,Mines=3,Population=44,
+        Limit=100,Turns=1)
+
+W38 (25,108,202,245) [REGULUS] (First=5,Last=5,Metal=2,Mines=1,Population=15,
+        Limit=41,Turns=2)
+
+W39 (13,56,163) [HATYSA] (First=2,Last=10,Industry=1,Metal=3,Mines=3,
+        Population=94,Limit=94,Turns=2,I-Ships=2)
+
+W40 (227,249) [null] (First=5,Last=0)
+
+W42 (229,246) [null] (First=8,Last=0)
+
+W47 (32,136) [MARS] (First=4,Last=10,Industry=1,Metal=3,Mines=3,Population=32,
+        Limit=85,Turns=3,I-Ships=1)
+
+W55 (128,153,188,218) [CERES] (First=4,Last=10,Industry=1,Metal=4,Mines=4,
+        Population=40,Limit=110,Turns=7,I-Ships=1)
+
+W56 (39,69,212) [HATYSA] (First=3,Last=10,Metal=6,Mines=2,Population=59,
+        Limit=63,Turns=1,P-Ships=1)
+
+W58 (9,26,32) [MARS] (First=2,Last=10,Industry=1,Metal=10,Mines=6,
+        Population=101,Limit=101,Turns=2,I-Ships=1)
+
+W69 (17,56,156) [MARS] (First=3,Last=10,Industry=2,Metal=2,Mines=2,
+        Population=29,Limit=29,Turns=7,I-Ships=5)
+
+W75 (147,176,249) [HATYSA] (First=4,Last=10,Metal=12,Mines=6,Population=38,
+        Limit=127,Turns=7,P-Ships=1)
+
+W76 (9,145,156) [MARS] (First=3,Last=10,Industry=1,Metal=1,Mines=1,
+        Population=28,Limit=28,Turns=7,I-Ships=5)
+
+W77 (172,214,241) [CERES] (First=5,Last=10,Industry=1,Metal=12,Mines=3,
+        Population=62,Limit=75,Turns=3,I-Ships=1)
+
+W85 (127,166) [null] (First=0,Last=0)
+
+W86 (66,163,241) [HATYSA] (First=3,Last=10,Industry=1,Metal=5,Mines=2,
+        Population=73,Limit=83,Turns=7,I-Ships=3,P-Ships=3)
+
+W87 (100,137,168) [NEPTUNE] (First=7,Last=10,Metal=10,Mines=2,Population=34,
+        Limit=61,Turns=5,P-Ships=1)
+
+W89 (17,165,248) [MARS] (First=5,Last=10,Metal=15,Mines=3,Population=69,
+        Limit=69,Turns=2,P-Ships=3)
+
+W91 (34,169,244) [MARS] (First=5,Last=10,Industry=1,Metal=9,Mines=3,
+        Population=24,Limit=92,Turns=4,I-Ships=2)
+
+W100 (87,169,244) [MARS] (First=5,Last=10,Industry=1,Metal=1,Mines=1,
+        Population=22,Limit=32,Turns=5,I-Ships=4)
+
+W105 (110,186,227) [MARS] (First=3,Last=10,Metal=6,Mines=3,Population=40,
+        Limit=60,Turns=7,P-Ships=1)
+
+W110 (105,136,251) [HATYSA] (First=3,Last=10,Metal=12,Mines=3,Population=44,
+        Limit=68,Turns=1,P-Ships=1)
+
+W116 (66,174,247) [CERES] (First=3,Last=10,Metal=15,Mines=3,Population=94,
+        Limit=148,Turns=1,P-Ships=1)
+
+W117 (135,188,204,218) [CERES] (First=3,Last=10,Metal=6,Mines=3,Population=50,
+        Limit=130,Turns=7,P-Ships=1)
+
+W119 (129,161,174) [CERES] (First=4,Last=10,Industry=1,Metal=8,Mines=3,
+        Population=28,Limit=100,Turns=7,I-Ships=2)
+
+W120 (150,177,234) [NEPTUNE] (First=9,Last=9,Industry=2,Metal=3,Mines=3,
+        Population=42,Limit=56,Turns=6,I-Ships=1)
+
+W122 (9,35,145) [MARS] (First=4,Last=10,Metal=15,Mines=3,Population=39,
+        Limit=100,Turns=7,P-Ships=1)
+
+W127 (85,165,200) [DENEB] (First=9,Last=10,Metal=5,Mines=2,Population=29,
+        Limit=51,Turns=5,I-Ships=1)
+
+W128 (55,202,242,250) [REGULUS] (First=6,Last=7,Metal=2,Mines=2,Population=47,
+        Limit=71,Turns=1)
+
+W129 (11,31,119,192) [ARIES] (First=5,Last=6,Metal=2,Mines=1,Population=36,
+        Limit=63,Turns=3,I-Ships=1)
+
+W135 (117,147,252) [CERES] (First=3,Last=10,Metal=3,Mines=3,Population=55,
+        Limit=85,Turns=1,P-Ships=1)
+
+W136 (47,110,243) [MARS] (First=4,Last=10,Metal=4,Mines=1,Population=24,
+        Limit=38,Turns=6,P-Ships=1)
+
+W137 (87,172) [NEPTUNE] (First=7,Last=10,Metal=34,Mines=6,Population=38,
+        Limit=120,Turns=6,P-Ships=1)
+
+W138 (19,192,209) [ARIES] (First=6,Last=6,Metal=6,Mines=3,Population=44,
+        Limit=100,Turns=3)
+
+W143 (13,176,252) [HATYSA] (First=2,Last=10,Metal=5,Mines=5,Population=101,
+        Limit=101,Turns=2,P-Ships=1)
+
+W145 (76,80,122,173) [HELIOS] (First=4,Last=10,Metal=6,Mines=3,Population=40,
+        Limit=40,Turns=7,I-Ships=1)
+
+W147 (75,135,204) [CERES] (First=4,Last=10,Industry=1,Metal=1,Mines=1,
+        Population=27,Limit=27,Turns=7,I-Ships=5)
+
+W149 (150,172,214) [NEPTUNE] (First=6,Last=9,Industry=1,Metal=11,Mines=4,
+        Population=84,Limit=129,Turns=7,I-Ships=2)
+
+W150 (120,149,169) [NEPTUNE] (First=8,Last=10,Industry=1,Metal=20,Mines=5,
+        Population=62,Limit=76,Turns=7,I-Ships=1)
+
+W153 (55,202,245) [CERES] (First=4,Last=10,Industry=1,Metal=34,Mines=7,
+        Population=67,Limit=170,Turns=6,I-Ships=5)
+
+W156 (69,76,223) [MARS] (First=3,Last=10,Metal=6,Mines=6,Population=94,
+        Limit=190,Turns=1,P-Ships=1)
+
+W161 (119,245,247) [CERES] (First=3,Last=10,Metal=4,Mines=3,Population=52,
+        Limit=52,Turns=1,P-Ships=1)
+
+W163 (20,39,86) [CERES] (First=2,Last=10,Population=95,Limit=95)
+
+W164 (97,165) [DENEB] (First=10,Last=10,Industry=1,Metal=4,Mines=3,
+        Population=23,Limit=36,Turns=1,I-Ships=1)
+
+W165 (89,127,164,253) [] (First=6,Last=10,Mines=7,Population=77,Limit=135)
+
+W166 (85,183,194,200) [DENEB] (First=10,Last=10,Metal=13,Mines=3,
+        Population=56,Limit=102,Turns=6,P-Ships=1)
+
+W168 (87,243) [null] (First=7,Last=0)
+
+W169 (91,100,150) [MARS] (First=5,Last=10,Metal=10,Mines=2,Population=50,
+        Limit=104,Turns=1)
+
+W172 (77,137,149,206) [CERES] (First=6,Last=10,Metal=9,Mines=3,Population=36,
+        Limit=85,Turns=1)
+
+W173 (145,253) [HELIOS] (First=6,Last=9,Metal=18,Mines=4,Population=33,
+        Limit=58,Turns=5,I-Ships=1)
+
+W174 (116,119,192) [CERES] (First=4,Last=10,Industry=1,Metal=4,Mines=2,
+        Population=47,Limit=144,Turns=6,I-Ships=3)
+
+W176 (3,75,143,186) [HATYSA] (First=2,Last=10,Metal=6,Mines=2,Population=79,
+        Limit=79,Turns=1,P-Ships=1)
+
+W186 (105,176,251) [MARS] (First=3,Last=10,Metal=10,Mines=5,Population=56,
+        Limit=101,Turns=1,P-Ships=1)
+
+W188 (55,117,242) [TEJAT] (First=4,Last=8,Industry=2/1,Metal=1,Mines=1,
+        Population=21,Limit=31,Turns=3,I-Ships=1)
+
+W192 (129,138,174,210) [ARIES] (First=5,Last=7,Metal=10,Mines=6,Population=72,
+        Limit=162,Turns=5)
+
+W199 (66,206) [null] (First=0,Last=0)
+
+W200 (127,166,253) [MARS] (First=9,Last=10,Industry=1,Metal=2,Mines=1,
+        Population=49,Limit=86,Turns=1)
+
+W202 (38,128,153) [REGULUS] (First=5,Last=6,Metal=6,Mines=3,Population=36,
+        Limit=97,Turns=2)
+
+W204 (74,117,147) [SATURN] (First=4,Last=8,Metal=4,Mines=2,Population=56,
+        Limit=73,Turns=3,I-Ships=1)
+
+W206 (172,199) [BELLATRIX] (First=10,Last=10,Metal=15,Mines=3,Population=33,
+        Limit=69,Turns=2)
+
+W210 (11,19,114,192) [ARIES] (First=6,Last=6,Industry=1,Metal=1,Mines=1,
+        Population=72,Limit=101,Turns=5,I-Ships=4)
+
+W212 (56,241,248) [] (First=4,Last=10,Metal=3,Mines=3,Population=67,Limit=67,
+        P-Ships=3)
+
+W214 (77,149,229,246) [NEPTUNE] (First=6,Last=10,Metal=20,Mines=2,
+        Population=96,Limit=96,Turns=2)
+
+W218 (55,117,247) [CERES] (First=3,Last=10,Metal=4,Mines=2,Population=35,
+        Limit=35,Turns=1,P-Ships=1)
+
+W223 (3,26,156) [MARS] (First=2,Last=10,Metal=9,Mines=3,Population=89,
+        Limit=95,Turns=2,P-Ships=1)
+
+W227 (40,105,231) [TEJAT] (First=5,Last=5,Metal=3,Mines=2,Population=43,
+        Limit=65,Turns=2,I-Ships=1)
+
+W229 (42,214,248) [DENEB] (First=6,Last=8,Metal=9,Mines=3,Population=87,
+        Limit=117,Turns=6)
+
+W231 (227,232) [null] (First=7,Last=0)
+
+W232 (19,231,243) [ARIES] (First=7,Last=7,Metal=6,Mines=2,Population=34,
+        Limit=66,Turns=4,I-Ships=1)
+
+W241 (77,86,212) [CERES] (First=4,Last=10,Metal=32,Mines=6,Population=28,
+        Limit=73,Turns=6,P-Ships=1)
+
+W242 (128,188) [null] (First=8,Last=0)
+
+W243 (136,168,232) [ARIES] (First=6,Last=7,Metal=6,Mines=2,Population=46,
+        Limit=60,Turns=3,I-Ships=1)
+
+W244 (32,91,100) [MARS] (First=4,Last=10,Metal=4,Mines=2,Population=55,
+        Limit=73,Turns=7,P-Ships=1)
+
+W245 (38,153,161) [CERES] (First=4,Last=10,Industry=1,Metal=2,Mines=2,
+        Population=21,Limit=40,Turns=7,I-Ships=1)
+
+W246 (42,191,214) [NEPTUNE] (First=8,Last=9,Industry=30,Metal=32,Mines=3,
+        Population=100,Limit=100,Turns=2)
+
+W247 (20,116,161,218) [CERES] (First=2,Last=10,Industry=1,Metal=10,Mines=8,
+        Population=88,Limit=88,Turns=2)
+
+W248 (89,212,229) [NEPTUNE] (First=5,Last=10,Metal=6,Mines=2,Population=55,
+        Limit=55,Turns=7,P-Ships=1)
+
+W249 (40,75,93) [TEJAT] (First=5,Last=5,Metal=5,Mines=3,Population=28,
+        Limit=65,Turns=2,I-Ships=1)
+
+W251 (3,26,110,186) [MARS] (First=2,Last=10,Metal=4,Mines=3,Population=114,
+        Limit=114,Turns=2,P-Ships=1)
+
+W252 (20,135,143) [CERES] (First=2,Last=10,Metal=4,Mines=3,Population=115,
+        Limit=127,Turns=2,P-Ships=1)
+
+W253 (17,165,173,200) [MARS] (First=6,Last=10,Metal=42,Mines=7,Population=46,
+        Limit=143,Turns=2)
+
