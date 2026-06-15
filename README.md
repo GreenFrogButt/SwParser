@@ -17,10 +17,10 @@ If no output file (-o) is given the database (-d) is used.  This is my normal us
 I only play anonymous multi Starweb, I've never tried this on a regular game.
 I also run Linux (actually, WSL under Windows) with Intellij IDEA IDE.
 
-The executable is in ..../out/artifacts/SwParser_jar/SwParser.jar \
+The executable is in ..../out/artifacts/SwParser_jar/SwParser.jar
 A copy is in src in case you don't want to build from source. \
 The file runTests.sh is a bash file I use for testing. \
-Starweb.java.txt is the original Java this started from. \
+Starweb.java.txt is the original Java this started from. 
 
 Typical usage:
 
