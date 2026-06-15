@@ -5,21 +5,22 @@ http://www.rickloomispbm.com/starweb.html
 It keeps track of every world seen, makes connections to unseen worlds (If W1 and W2
 connect to W3 but you can't see W3), and prints a list of worlds that changed
 owners.
-
+```
 It takes 3 arguments:
     -t input turn name
-    -d database to use
-    -o output file name
+    -d database to use      Defaults to "Database.txt"
+    -o output file name     Defaults to database (-o)
+```
 
 If no output file (-o) is given the database (-d) is used.  This is my normal use.
 
 I only play anonymous multi Starweb, I've never tried this on a regular game.
 I also run Linux (actually, WSL under Windows) with Intellij IDEA IDE.
 
-The executable is in ..../out/artifacts/SwParser_jar/SwParser.jar
-A copy is in src in case you don't want to build from source.
-The file runTests.sh is a bash file I use for testing.
-Starweb.java.txt is the original Java this started from.
+The executable is in ..../out/artifacts/SwParser_jar/SwParser.jar \
+A copy is in src in case you don't want to build from source. \
+The file runTests.sh is a bash file I use for testing. \
+Starweb.java.txt is the original Java this started from. \
 
 Typical usage:
 
@@ -33,9 +34,9 @@ Typical usage:
 
 Caveats:
 I've been using the Java version for years, adding cruft as it came up.  This is
-the second game for the Kotlin version.  Probable issues:
-    planet buster bombs
-    consumer goods
+the second game for the Kotlin version.  Probable issues: \
+    planet buster bombs \
+    consumer goods \
     ???
 
 I've dorked with parsing artifacts and fleets but don't actually use them.
