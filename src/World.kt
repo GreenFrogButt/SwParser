@@ -11,40 +11,18 @@ import kotlin.collections.mutableMapOf
  * Started from my 3rd Java program I started some 10-15 years ago.
  */
 
-/*
- * I'm testing by running this against the Java program's output.  There is
- * some crap making this output look like the Java output that I'd like to fix
- * some day.  I labeled this javaBuffoonary
- *
- * The mismatches left that differ between the owner being null or "" when the world
- * is in the database but not the turn (W165 and W212 in my test cases)  is due to
- * a bug in the Java version I don't care to replicate.
- */
-
-// TODO: Make this an enum (EnumSet?)
-private const val jbDefaultOwnerNull    = 0x02
-private const val jbPrintUsableIndustry = 0x10
-private const val jbUsePopLimit         = 0x20
-@Suppress("KotlinConstantConditions")
-private const val javabuffoonary =
-        jbDefaultOwnerNull or
-        jbPrintUsableIndustry or
-        jbUsePopLimit
-
-@Suppress("SENSELESS_COMPARISON")
-private val defaultOwner = if((javabuffoonary and jbDefaultOwnerNull) != 0) "null" else ""
-
 // W16 (78,152,210) [] (B*L*A*C*K H*O*L*E)
 // The parser strips the space, but I want the space when I print it.
 private const val blackHoleStringParse:String = """B*L*A*C*KH*O*L*E"""
 private const val blackHoleStringPrint:String = "B*L*A*C*K H*O*L*E"
+
 
 data class World (
     var number: Int = 0,     // world number
     var first: Int = 0,      // turn world first seen
     var last: Int = 0,      // last turn world was seen
     var connections: MutableSet<Int> = TreeSet(),
-    var owner: String = defaultOwner,
+    var owner: String = "",
     var convertOwner: String = "",
     var converts: Int = 0,
     var robots: Int = 0,
@@ -66,6 +44,36 @@ data class World (
     var fleets: List<Fleet> = listOf(),
     var departed: List<MovedFleet> = listOf()
 ) {
+    /*
+     * I'm testing by running this against the Java program's output.  There is
+     * some crap making this output look like the Java output that I'd like to fix
+     * some day.  I labeled this javaBuffoonary
+     *
+     * The mismatches left that differ between the owner being null or "" when the world
+     * is in the database but not the turn (W165 and W212 in my test cases)  is due to
+     * a bug in the Java version I don't care to replicate.
+     */
+    enum class JbFlag {
+        LAST_EQUALS_ZERO,
+        DEFAULT_OWNER_NULL,
+        PRINT_USABLE_INDUSTRY,
+        USE_POP_LIMIT,
+    }
+
+    val javabuffoonary = EnumSet.of(
+        JbFlag.DEFAULT_OWNER_NULL,
+        JbFlag.PRINT_USABLE_INDUSTRY,
+        JbFlag.LAST_EQUALS_ZERO,
+        JbFlag.USE_POP_LIMIT,
+    )
+
+
+    init {
+        //@Suppress("SENSELESS_COMPARISON")
+        if(JbFlag.DEFAULT_OWNER_NULL in javabuffoonary)
+            owner = "null"
+    }
+
 
     /**
      * Return the world as a String without fleet or artifact info.
@@ -75,7 +83,7 @@ data class World (
         append(connections.joinToString(separator = ",", prefix = "(", postfix = ")"))
 
         @Suppress("SENSELESS_COMPARISON")
-        if (((javabuffoonary and jbUsePopLimit) != 0) && (limit == 0)) {
+        if (JbFlag.USE_POP_LIMIT in javabuffoonary && (limit == 0) ){
             // TODO:  If this works think of other times limit could be 0.
             //        Like BUSTED worlds.
             append(" [null] ")
@@ -85,52 +93,54 @@ data class World (
         if (convertOwner.isNotEmpty()) append("C[$convertOwner] ")
         append("(First=$first")
 
-    // zzzjim use last >= for regression testing, change to 'last > 0' when done.
-    if (last >= 0)          append(",Last=$last")
-    if(blackHole)           append("," + blackHoleStringPrint)
-    else {
-        if(busted)          append(",BUSTED")
-        if (industry > 0) {
-            append(",Industry=$industry")
-            @Suppress("SENSELESS_COMPARISON")
-            if(javabuffoonary and jbPrintUsableIndustry != 0) {
-                if (usable != industry) append("/$usable")
+        // use last >= for regression testing, change to last > 0 when done.
+        if (JbFlag.LAST_EQUALS_ZERO in javabuffoonary || (last > 0) )
+            append(",Last=$last")
+
+        if (blackHole) append("," + blackHoleStringPrint)
+        else {
+            if (busted) append(",BUSTED")
+            if (industry > 0) {
+                append(",Industry=$industry")
+                @Suppress("SENSELESS_COMPARISON")
+                if (JbFlag.PRINT_USABLE_INDUSTRY in javabuffoonary)
+                    if (usable != industry) append("/$usable")
             }
+            if (metal > 0) append(",Metal=$metal")
+            if (mines > 0) append(",Mines=$mines")
+
+            if (pop + converts + robots > 0) {
+                append(",Population=")
+
+                // Population is a bit trickey
+                //      pop   robots   converts   result
+                //      34      0       0           34
+                //      87      0       9           87/9C
+                //      0       6       0           6R
+                //      0       0       127         127C
+
+                if (pop > 0) {
+                    append("$pop")
+                    if (converts > 0) append("/${converts}C")
+                } else if (robots > 0) append("${robots}R")
+                else if (converts > 0) append("${converts}C")
+            }
+
+            if (limit > 0) append(",Limit=$limit")
+            if (turns > 0) append(",Turns=$turns")
+            if (iships > 0) append(",I-Ships=$iships")
+            if (pships > 0) append(",P-Ships=$pships")
+            if (plunder.isNotEmpty()) append(",Plunder=$plunder")
+            if (cg > 0) append(",CG-Unload=$cg")
+
         }
-        if (metal > 0)          append(",Metal=$metal")
-        if (mines > 0)          append(",Mines=$mines")
-
-        if (pop + converts + robots > 0) {
-            append(",Population=")
-
-            // Population is a bit trickey
-            //      pop   robots   converts   result
-            //      34      0       0           34
-            //      87      0       9           87/9C
-            //      0       6       0           6R
-            //      0       0       127         127C
-
-            if (pop > 0) {
-                append("$pop")
-                if (converts > 0) append("/${converts}C")
-            } else if (robots > 0) append("${robots}R")
-            else if (converts > 0) append("${converts}C")
-        }
-
-        if (limit > 0) append(",Limit=$limit")
-        if (turns > 0) append(",Turns=$turns")
-        if (iships > 0) append(",I-Ships=$iships")
-        if (pships > 0) append(",P-Ships=$pships")
-        if (plunder.isNotEmpty()) append(",Plunder=$plunder")
-        if (cg > 0) append(",CG-Unload=$cg")
-    }
-
         append(")${System.lineSeparator()}")
     }
 
     /**
      * Return the world only, with lines less than 77 chars.
      */
+    //override fun toString(): String {
     override fun toString(): String {
         val world = printWorld()
         return addLineBreaks(world)
@@ -346,8 +356,7 @@ class WorldManager(private val fleetManager: FleetManager) {
         // Clear out the last paren
         scanner.useDelimiter("\\s+")
         if (scanner.hasNext("[)]")) {
-            @Suppress("UNUSED_PARAMETER")
-            val throwAway = scanner.next()
+            scanner.next()
         }
 
         world.artifacts = artifactManager.parseArtifactList(scanner, LocationType.WORLD, world.number)
@@ -578,7 +587,7 @@ class WorldManager(private val fleetManager: FleetManager) {
         // Currently will throw an exception on syntax error, nor will it notice
         // the trailing 'C' is missing.
         // TODO: fix
-        val (populationStr, delimiterStr, secondNumberStr, convertsEndStr) = matchResult.destructured
+        val (populationStr, delimiterStr, secondNumberStr, _) = matchResult.destructured
         val population = populationStr.toInt()
 
         world.pop = population    // Assume all normal pop
@@ -738,6 +747,7 @@ private fun killWarnings() {
             println("that shouldn't happen")
     wm.parseConnections(mutableMapOf(), 301, "foo", true)
 }
+
 fun main(args: Array<String>) {
     if(args.size == 42) killWarnings()
     var pass = testParseDepartedFleets(false)
