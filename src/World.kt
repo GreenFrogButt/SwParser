@@ -1,6 +1,7 @@
 import Utilities.addLineBreaks
 import Utilities.getOwner
 import Utilities.simpleInt
+import java.io.PrintStream
 import java.util.*
 import java.util.regex.Pattern
 import kotlin.collections.mutableMapOf
@@ -217,10 +218,10 @@ class WorldManager(private val fleetManager: FleetManager) {
      * TODO: Had a game where some worlds only had 1 connection.  Dig it up and
      *      fix the "connectoins.size > 1" line.
      */
-    fun printWorlds() {
+    fun printWorlds(destination: PrintStream) {
         for(world in worldList.toSortedMap().values) {
             if(world.connections.size > 1)
-                println(world)
+                destination.println(world)
         }
     }
 

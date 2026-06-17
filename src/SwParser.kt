@@ -247,7 +247,7 @@ class SwParser {
         destination.println("\n  ------------")
 
         // body
-        worldManager.printWorlds()
+        worldManager.printWorlds(destination)
 
         // Had a game where some worlds only had 1 connection.
         // TODO: track down that game and ensure the parser Does The Right Thing
@@ -264,34 +264,10 @@ class SwParser {
      */
 
     // TODO:  This Is The Way, but it doesn't work :(
-    private fun xaveDatabase(fileName: String, debug: Boolean = false) {
-        if (debug) println("saveDatabase: fileName = $fileName")
-        try {
-            PrintStream(fileName).use { out ->
-                printGame(destination = out)
-            }
-        } catch (io: IOException) {
-            // "Permission denied" shows up here
-            println("IOException, is $fileName read only?\n$io")
-        } catch (e: Exception) {
-            println("Can't open $fileName for writing: $e")
-        }
-    }
     private fun saveDatabase(fileName: String, debug: Boolean = false) {
         if (debug) println("saveDatabase: fileName = $fileName")
-        val old: PrintStream? = System.out
-        try {
-            // Don't care if it already exists or not
-            File(fileName).createNewFile()
-
-            System.setOut(PrintStream(fileName))
-            printGame()
-            System.setOut(old)
-        } catch (io: IOException) {
-            // "Permission denied" shows up here
-            println("IOException, is $fileName read only?\n$io")
-        } catch (e: Exception) {
-            println("Can't open $fileName for writing: $e")
+        PrintStream(fileName).use { out ->
+            printGame(destination = out)
         }
     }
 
