@@ -505,6 +505,7 @@ class WorldManager(private val fleetManager: FleetManager) {
      *    "(F19[MARS]-->W13 F45[MARS]-->W13 F68[HATYSA]-->W13 F222[HATYSA]-->W13)"
      */
 
+    // TODO: duplicated in MovedFleets.kt.  Pick one or the other.
     fun parseDepartedFleets(currentWorld: Int, scannerIn: Scanner, debug: Boolean = false) : List<MovedFleet> {
         val leavingFleets = mutableListOf<MovedFleet>()
 

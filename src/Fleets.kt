@@ -81,37 +81,11 @@ data class Fleet(
         if( (other == null) || (other !is Fleet) )
             return false
 
-        // @formatter:off
-        return( (id            == other.id) ||
-                (owner         == other.owner) ||
-                (size          == other.size) ||
-                (location      == other.location) ||
-                (moved         == other.moved) ||
-                (cargo         == other.cargo) ||
-                (giftee        == other.giftee) ||
-                (atPeace       == other.atPeace) ||
-                (captured      == other.captured) ||
-                (target        == other.target) ||
-                (lostBy        == other.lostBy) ||
-                (artifacts     == other.artifacts) )
-        // @formatter:oon
+        return(id == other.id)
     }
 
     override fun hashCode(): Int {
-        println("hashCode")
-        return Objects.hash(
-        id,
-                owner,
-                size,
-                location,
-                moved,
-                cargo,
-                giftee,
-                atPeace,
-                captured,
-                target,
-                lostBy,
-                artifacts)
+        return Objects.hash(id)
     }
 }
 

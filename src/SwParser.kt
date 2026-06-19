@@ -109,7 +109,7 @@ class SwParser {
      */
    private  fun parseDatabase(fileName: String, debug: Boolean = false) {
         if (debug) println("Parsing database $fileName")
-        getFileReader(fileName, create = false)?.use { reader ->
+        getFileReader(fileName, create = true)?.use { reader ->
             parseHeader(reader)
             getWorlds(reader, true)
         }
@@ -193,7 +193,7 @@ class SwParser {
      *  file exists  create
      *      y           x   return file
      *      n           y   create file, return null
-     *      n           n   print message, throw exception, exit
+     *      n           n   print message and exit
      */
 
     private fun getFileReader(fileName: String, create: Boolean = false, debug: Boolean = false): BufferedReader? {

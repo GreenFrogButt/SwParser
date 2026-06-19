@@ -20,11 +20,11 @@ data class MovedFleet(
         if ((other == null) || (other !is MovedFleet))
             return false
 
-        return (id == other.id && owner == other.owner && destination == other.destination)
+        return (id == other.id)
     }
 
     override fun hashCode(): Int {
-        return Objects.hash(id, owner, source, destination)
+        return Objects.hash(id)
     }
 
     override fun toString(): String {
@@ -51,16 +51,17 @@ data class MovedFleet(
 
 class MovedFleets {
     internal fun parseSingleMovedFleet(location:Int, token: String): MovedFleet? {
+        if (token.isEmpty()) return null
         try {
             val fields = token.split("[", "]-->W")
             val id = fields[0].trim().substring(1).toInt()
             val owner = fields[1]
             val destination = fields[2].trim().toInt()
             return MovedFleet(id, owner, location, destination)
-        } catch(e: Exception) {
+        } catch (e: Exception) {
             println("parseSingleMovedFleet exception: ${e.message}")
-            return null
         }
+        return null
     }
 
     /**
@@ -72,6 +73,7 @@ class MovedFleets {
      * @return list of fleets that moved
      */
 
+    // TODO: duplicated in World.kt.  Pick one or the other.
     fun parseMovedFleets(location: Int = 0, scanner: Scanner) : List<MovedFleet> {
         val mf = mutableListOf<MovedFleet>()
         if (scanner.hasNext("[(]F\\d+.*")) {
@@ -93,7 +95,7 @@ class MovedFleets {
     private val NEPTUNE    = "stupid"
 } // end of class
 
-private fun simpleTest(verbose: Boolean = false) {
+private fun simpleTest(verbose: Boolean = true) {
     data class SimpleData(val pass: Boolean, val input: String)
     val tests = listOf(
         SimpleData(true, "F34[HATYSA]-->W9"),
@@ -108,6 +110,7 @@ private fun simpleTest(verbose: Boolean = false) {
     val mf = MovedFleets()
     var pass = true
     for(test in tests) {
+        if(verbose) println("test: $test")
         val moved = mf.parseSingleMovedFleet(42, test.input)
         if(moved == null) {
             if(test.pass)

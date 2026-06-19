@@ -1,8 +1,9 @@
-This program helps mapping the game Starweb from Flying Buffalo Inc.
+This program helps mapping the game Starweb from Flying Buffalo Inc.  It includes
+libraries for parsing turns, worlds, artifacts, and fleets.
 
 http://www.rickloomispbm.com/starweb.html
 
-It keeps track of every world seen, makes connections to unseen worlds (If W1 and W2
+Keeps track of every world seen, makes connections to unseen worlds (If W1 and W2
 connect to W3 but you can't see W3), and prints a list of worlds that changed
 owners.
 

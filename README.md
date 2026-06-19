@@ -20,7 +20,8 @@ I also run Linux (actually, WSL under Windows) with Intellij IDEA IDE.
 The executable is in ..../out/artifacts/SwParser_jar/SwParser.jar
 A copy is in src in case you don't want to build from source. \
 The file runTests.sh is a bash file I use for testing. \
-Starweb.java.txt is the original Java this started from. 
+Starweb.java.txt is the original Java this started from. \
+The 2 main files are SwParser.kt and World.kt
 
 Typical usage:
 

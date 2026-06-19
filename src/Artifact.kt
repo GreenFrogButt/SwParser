@@ -20,11 +20,11 @@ data class Artifact(
         if( (other == null) || (other !is Artifact) )
             return false
 
-        return this.id == other.id && this.name == other.name
+        return this.id == other.id
     }
 
     override fun hashCode(): Int {
-        return Objects.hash(id, name)
+        return Objects.hash(id)
     }
 
     override fun toString(): String { return ("V$id:$name") }
