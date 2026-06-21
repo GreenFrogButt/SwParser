@@ -119,7 +119,7 @@ class FleetManager(val artifactManager: ArtifactManager = ArtifactManager()) {
      *
      *
      *  @param location where the fleet is
-     *  @param scanner  scanner.next() will return "(Moved,Cargo=6)"
+     *  @param scanner  scanner.next() will return ex: "F16[HATYSA]=6"
      *  @return a Fleet, or null if scanner.hasNext() isn't a fleet
      */
 
@@ -127,20 +127,21 @@ class FleetManager(val artifactManager: ArtifactManager = ArtifactManager()) {
         if(!scanner.hasNext("F\\d+.*"))
             return null
 
-        val fleet = Fleet(location = location)
         val token = scanner.next()
-        val parts = token.split("[")
-        fleet.id = parts[0].substring(1).toInt()
+        //                           F16[HATYSA]=6
+        val fleetPattern = Regex("""F(\d+)\[([A-Z]*)]=(\d+)""")
+        val match = fleetPattern.find(token) ?: run {
+            println("parseSingleFleet: Malformed input \"$token\"\n")
+            return null
+        }
 
-        // parts[1] is something like "HATYSA]=2"
-        val moreParts = parts[1].split("=")
-        fleet.owner = moreParts[0].substring(0, moreParts[0].length - 1)
-        fleet.size = moreParts[1].toInt()
+        val (id, owner, size) = match.destructured
+        val fleet = Fleet(id = id.toInt(), owner = owner, size = size.toInt(), location = location)
 
-        val pattern = Pattern.compile("^\\(F\\d+\\[.*")
-        if (!scanner.hasNext() ||        // Last fleet at world has no body
-            scanner.hasNext(pattern) )   // or moving fleet "(F34[someone]-->Wxxx)"
-            return fleet                // means we're done
+        val bodyPattern = Pattern.compile("^\\(F\\d+\\[.*")
+        if (!scanner.hasNext() ||           // if the Last fleet at world has no body
+            scanner.hasNext(bodyPattern) )  // or moving fleet "(F34[someone]-->Wxxx)"
+            return fleet                    // means we're done
 
         parseFleetBody(fleet, scanner)
         fleet.artifacts = artifactManager.parseArtifactList(scanner, LocationType.FLEET, fleet.id)
@@ -151,7 +152,7 @@ class FleetManager(val artifactManager: ArtifactManager = ArtifactManager()) {
 
     /**
      * Parse the fleet body '(Moved)', '(Cargo=6,At-Peace)', etc.  It is assumed
-     * moving fleets ('(Fnnn[owner]-->Wnnn') has already been filtered out.
+     * moving fleets ('(Fnnn[owner]-->Wnnn') have already been filtered out.
      * Planet busters are fun: F4[ATRIA]=24 (Moved,PLANET-BUSTER(Built))
      */
     private fun parseFleetBody(fleet: Fleet, scanner: Scanner) {
@@ -209,20 +210,27 @@ class FleetManager(val artifactManager: ArtifactManager = ArtifactManager()) {
     /**
      * Pretty print fleets
      *
-     */
-    fun prettyPrintFleets() {
-        prettyPrintFleets(allFleets)
-    }
-
-    /**
-     * Pretty print fleets
-     *
      * @param fleets
      */
+    fun prettyPrintFleets() { prettyPrintFleets(allFleets) }
+
     fun prettyPrintFleets(fleets: List<Fleet>) {
         for(fleet in fleets)
             println("    $fleet")
     }
+    // See SwParser.kt for the explanation, search for 'stupid'.
+    @Suppress
+    private val owner    = "dokka"
+    @Suppress
+    private val URANUS    = "this"
+    @Suppress
+    private val NEPTUNE   = "is"
+    @Suppress
+    private val CERES     = "not"
+    @Suppress
+    private val MARS      = "a"
+    @Suppress
+    private val HATYSA    = "link"
 } // end of class
 
 // This test fails because I'm futzing with how fleets get printed.
