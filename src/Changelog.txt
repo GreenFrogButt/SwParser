@@ -1,0 +1,5 @@
+Made javaBuffoonary an enum.
+
+saveDatabase no longer redirects stdout, prints directly to a file instead.
+
+World.parseDepartedFleets does the same thing as MovedFleets.parseMovedFleets.  Oops.
