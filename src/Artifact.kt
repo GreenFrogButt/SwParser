@@ -15,7 +15,6 @@ data class Artifact(
     var where: LocationType = LocationType.UNKNOWN,
     var location: Int = 0
 ) {
-    // Do I want everything, or just the id and name?
     override fun equals(other: Any?): Boolean {
         if( (other == null) || (other !is Artifact) )
             return false
@@ -61,7 +60,7 @@ class ArtifactManager(listOfArtifacts: List<Artifact> = listOf()) {
      * Add an artifact to the list.
      * @param artifact the artifact to add
      */
-    fun add(artifact: Artifact) {
+    internal fun add(artifact: Artifact) {
         // Ensure it's not already in the list for testing/debugger, later maybe
         // use putOrAdd()
         if(allArtifacts.containsKey(artifact.id)) {
@@ -75,8 +74,8 @@ class ArtifactManager(listOfArtifacts: List<Artifact> = listOf()) {
      * Given an artifact ID return the artifact.  Returns an artifact
      * with an ID of 0 on error.
      */
-    fun getByID(id:Int) : Artifact {
-        return allArtifacts.getOrElse(id){ Artifact(0, "error")}
+    fun getArtifact(id:Int) : Artifact {
+        return allArtifacts.getOrElse(id){ Artifact(0, "Artifact V$id not found")}
     }
 
     /**
@@ -119,7 +118,7 @@ class ArtifactManager(listOfArtifacts: List<Artifact> = listOf()) {
     }
 
     /**
-     * Parse a list of artifacts.
+     * Parse a list of 0 or more artifacts.
      *
      * @param scanner  data source
      * @param worldOrFleet  world or fleet
@@ -139,7 +138,9 @@ class ArtifactManager(listOfArtifacts: List<Artifact> = listOf()) {
 
         return foundArtifacts.toList()
     }
-}
+} // end of class
+
+private val dashes = "-".repeat(30)
 
 private fun testSingleArtifacts() {
     var pass = true
@@ -198,8 +199,8 @@ private fun testArtifactList(verbose: Boolean = false) {
             "   V2:Nebula Scrolls, Vol. II V15:Titanium Crown V46:Blessed Shekel " +
                 "V72:Ancient Moonstone V88:Arcturian Stardust",
             listOf(
-                Artifact(65, "Titanium Sepulchre"),
                 Artifact(57, "Vegan Sword"),
+                Artifact(65, "Titanium Sepulchre"),
                 Artifact(71, "Platinum Moonstone"),
                 Artifact(2, "Nebula Scrolls, Vol. II"),
                 Artifact(15, "Titanium Crown"),
@@ -209,7 +210,6 @@ private fun testArtifactList(verbose: Boolean = false) {
     )
 
     var pass = true
-    //val verbose = false
 
     for(test in tests) {
         if (verbose) println("\ntestArtifactList input ${test.input}")
@@ -284,7 +284,7 @@ private fun testListIn(verbose: Boolean = false) {
 // Get rid of IntelliJ warnings, this should never be called
 private fun fixUnused() {
     val am = ArtifactManager()
-    val junk = am.getByID(42)
+    val junk = am.getArtifact(42)
     if(junk.id == 43) println()
     testArtifactList(true)
     testListIn(true)

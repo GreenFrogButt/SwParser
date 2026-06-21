@@ -34,8 +34,8 @@ Typical usage:
     and save the database.
 
 Caveats:
-I've been using the Java version for years, adding cruft as it came up.  This is
-the second game for the Kotlin version.  Probable issues: \
+I've been using the Java version for years, adding cruft as it came up.  I'm currently
+playing my second game using the Kotlin version.  Probable issues: \
     planet buster bombs \
     consumer goods \
     ???
