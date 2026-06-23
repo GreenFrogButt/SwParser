@@ -35,8 +35,6 @@ Typical usage:
     Every subsequent turn will read the database, add the turn's information,
     and save the database.
 
-Java needs to be installed on your local computer: https://www.java.com/en/download/help/download_options.html
-
 Caveats:
 I've been using the Java version for years, adding cruft as it came up.  I'm currently
 playing my second game using the Kotlin version.  Probable issues: \
