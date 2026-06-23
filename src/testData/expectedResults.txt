@@ -1,4 +1,4 @@
-Version 1.0
+Version 1.1
 {CERES=Pirate, HATYSA=Merchant, MARS=Berserker}
 
 Worlds 51  Keys 42  Ships 483  Ind 111  Mines 170
@@ -6,12 +6,13 @@ Worlds 51  Keys 42  Ships 483  Ind 111  Mines 170
 Available metal: 405
 
 World  66 was     null, now         
+World  75 was   HATYSA, now     MARS
 World  87 was  NEPTUNE, now     MARS
 World 168 was     null, now     MARS
 World 218 was    CERES, now         
 World 253 was     MARS, now  NEPTUNE
 
-Game SW-BM/111,  Turn 11.   2026-06-14
+Game SW-BM/111,  Turn 11.   2026-06-23
 
 
   ------------
@@ -72,8 +73,8 @@ W66 (86,116,199) [null] (First=11,Last=11,B*L*A*C*K H*O*L*E)
 W69 (17,56,156) [MARS] (First=3,Last=11,Industry=2,Metal=3,Mines=3,
     Population=29,Limit=29,Turns=1,I-Ships=3)
 
-W75 (147,176,249) [HATYSA] (First=4,Last=11,Metal=7,Mines=7,Population=42,
-    Limit=127,Turns=1,P-Ships=1)
+W75 (147,176,249) [MARS] (First=4,Last=11,Gift from [HATYSA],Metal=7,Mines=7,
+    Population=42,Limit=127,Turns=1,P-Ships=1)
 
 W76 (9,145,156) [MARS] (First=3,Last=11,Industry=1,Metal=2,Mines=2,
     Population=28,Limit=28,Turns=1,I-Ships=6)

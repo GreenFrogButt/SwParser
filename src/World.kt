@@ -41,6 +41,7 @@ data class World (
     var busted: Boolean = false,
     var deaths: String = "",
     var blackHole: Boolean = false,
+    var giftee: String = "",
     var artifacts: List<Artifact> = listOf(),
     var fleets: List<Fleet> = listOf(),
     var departed: List<MovedFleet> = listOf()
@@ -101,6 +102,7 @@ data class World (
         if (blackHole) append("," + blackHoleStringPrint)
         else {
             if (busted) append(",BUSTED")
+            if (giftee.isNotEmpty()) append(",Gift from [$giftee]")
             if (industry > 0) {
                 append(",Industry=$industry")
                 @Suppress("SENSELESS_COMPARISON")
@@ -333,6 +335,7 @@ class WorldManager(private val fleetManager: FleetManager) {
             world.pships = 0
             world.deaths = ""
             world.plunder = ""
+            world.giftee = ""
             // blackHole nor busted get reset.  Should they?
         }
 
@@ -466,6 +469,7 @@ class WorldManager(private val fleetManager: FleetManager) {
                 // @formatter:off   Turn IntelliJ's formatter off for a bit
                 token.startsWith("First=")     ->    world.first = simpleInt(token)
                 token.startsWith("Last=")      ->    world.last = simpleInt(token)
+                token.startsWith("Gift")       ->    parseGift(world, token)
                 token.startsWith("Industry=")  ->    parseIndustry(world, token)
                 token.startsWith("Mines=")     ->    world.mines = simpleInt(token)
                 token.startsWith("Metal=")     ->    world.metal = simpleInt(token)
@@ -534,6 +538,19 @@ class WorldManager(private val fleetManager: FleetManager) {
     private fun parsePlunder(world: World, line: String) {
         val count = line.split('=')
         world.plunder = count[1]
+    }
+
+    /**
+     *  Parse "Gift from [foo]" and set the giftee.
+     */
+    private fun parseGift(world: World, token: String) {
+        val pattern = Regex("""\[([A-Z]+)\]""")
+        val match = pattern.find(token) ?: run {
+            println("parseGift: Malformed input \"$token\"\n")
+            return
+        }
+        val (giftee) = match.destructured
+        world.giftee = giftee
     }
 
     /**

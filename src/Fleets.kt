@@ -210,14 +210,15 @@ class FleetManager(val artifactManager: ArtifactManager = ArtifactManager()) {
     /**
      * Pretty print fleets
      *
-     * @param fleets
+     * @param fleets List of fleets to print
      */
-    fun prettyPrintFleets() { prettyPrintFleets(allFleets) }
-
     fun prettyPrintFleets(fleets: List<Fleet>) {
         for(fleet in fleets)
             println("    $fleet")
     }
+
+    fun prettyPrintFleets() { prettyPrintFleets(allFleets) }
+
     // See SwParser.kt for the explanation, search for 'stupid'.
     @Suppress
     private val owner    = "dokka"

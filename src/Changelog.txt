@@ -1,6 +1,6 @@
-Note to self:  When making a release
-    1)  Update versionString in SwParser
-    2)  Copy the jar file to src
+V1.1
+
+Forgot to look for gifted worlds.
 
 Made javaBuffoonary an enum.
 
@@ -8,4 +8,14 @@ saveDatabase no longer redirects stdout, prints directly to a file instead.
 
 World.parseDepartedFleets does the same thing as MovedFleets.parseMovedFleets.  Oops.
 
-MovedFleets.kt now uses matched groups.
+Replaced some parsing regexps with matched groups.  I love these things.
+
+
+V1.0
+
+Initial release
+
+Note to self:  When making a release
+    1)  Update versionString in SwParser
+    2)  Copy the jar file to src
+

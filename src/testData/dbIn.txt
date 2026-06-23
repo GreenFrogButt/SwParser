@@ -29,8 +29,8 @@ W11 (129,210) [null] (First=6,Last=0)
 W13 (3,39,143) [HATYSA] (First=1,Last=10,Industry=30,Metal=31,Mines=3,
         Population=100,Limit=100,Turns=3)
 
-W17 (69,89,253) [MARS] (First=5,Last=10,Industry=1,Metal=23,Mines=5,
-        Population=52,Limit=55,Turns=6,I-Ships=3)
+W17 (69,89,253) [MARS] (First=5,Last=10,Gift from [CERES],Industry=1,Metal=23,Mines=5,
+        Population=52,Limit=55,Turns=1,I-Ships=3)
 
 W19 (138,210,232) [null] (First=6,Last=0)
 

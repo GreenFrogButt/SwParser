@@ -102,7 +102,7 @@ W69 (17,56,156) [MARS] (Industry=2,Metal=3,Mines=3,Population=29,Limit=29,
       Turns=1,I-Ships=3)
    (F108[MARS]-->W56)
 
-W75 (147,176,249) [HATYSA] (Metal=7,Mines=7,Population=42,Limit=127,Turns=1,
+W75 (147,176,249) [MARS] (Gift from [HATYSA],Metal=7,Mines=7,Population=42,Limit=127,Turns=1,
       P-Ships=1)
    (F222[HATYSA]-->W176)
 

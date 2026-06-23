@@ -61,7 +61,7 @@ import kotlin.system.exitProcess
  */
 
 class SwParser {
-    private val versionString = "1.0"
+    private val versionString = "1.1"
     fun getVersionString() : String { return versionString }
 
     data class GameInfo(
